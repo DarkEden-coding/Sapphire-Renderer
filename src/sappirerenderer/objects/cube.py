@@ -3,17 +3,20 @@ import numpy as np
 
 
 class Cube(VertLineObject):
-    def __init__(self, position=np.array([0, 0, 0]), color=(0, 0, 0), size=1):
-        vertices = [
-            np.array([0, 0, 0]),
-            np.array([size, 0, 0]),
-            np.array([size, size, 0]),
-            np.array([0, size, 0]),
-            np.array([0, 0, size]),
-            np.array([size, 0, size]),
-            np.array([size, size, size]),
-            np.array([0, size, size])
-        ]
+    def __init__(self, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0), size=1):
+        vertices = np.array(
+            [
+                np.array([0, 0, 0]),
+                np.array([size, 0, 0]),
+                np.array([size, size, 0]),
+                np.array([0, size, 0]),
+                np.array([0, 0, size]),
+                np.array([size, 0, size]),
+                np.array([size, size, size]),
+                np.array([0, size, size]),
+            ],
+            dtype=float,
+        )
 
         lines = [
             [0, 1],
@@ -27,7 +30,9 @@ class Cube(VertLineObject):
             [0, 4],
             [1, 5],
             [2, 6],
-            [3, 7]
+            [3, 7],
         ]
 
         super().__init__(vertices, lines, position, color)
+
+        self.move(np.array([-size / 2, -size / 2, -size / 2]))

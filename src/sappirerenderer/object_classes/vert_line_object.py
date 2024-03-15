@@ -20,21 +20,49 @@ class VertLineObject(Object):
             self.vertices[i] += self.position
 
     def draw(self, surface, camera):
-        for line in self.lines:
-            start = self.vertices[line[0]]
-            end = self.vertices[line[1]]
+        if self.lines is not None:
+            for line in self.lines:
+                start = self.vertices[line[0]]
+                end = self.vertices[line[1]]
 
-            start = project_point(start, camera)
-            end = project_point(end, camera)
+                start, s_scale = project_point(start, camera)
+                end, e_scale = project_point(end, camera)
 
-            if draw_vertices:
-                if start is not None:
-                    pygame.draw.circle(surface, self.color, start, point_thickness)
-                if end is not None:
-                    pygame.draw.circle(surface, self.color, end, point_thickness)
+                if draw_vertices:
+                    if start is not None:
+                        pygame.draw.circle(
+                            surface,
+                            self.color,
+                            start,
+                            max(int(point_thickness * s_scale), 1),
+                        )
+                    if end is not None:
+                        pygame.draw.circle(
+                            surface,
+                            self.color,
+                            end,
+                            max(int(point_thickness * e_scale), 1),
+                        )
 
-            if start is None or end is None:
-                continue
+                if start is None or end is None:
+                    continue
 
-            if draw_lines:
-                pygame.draw.line(surface, self.color, start, end, line_thickness)
+                if draw_lines:
+                    pygame.draw.line(
+                        surface,
+                        self.color,
+                        start,
+                        end,
+                        max(int(line_thickness * (s_scale + e_scale) / 2), 1),
+                    )
+        else:
+            for vertex in self.vertices:
+                vertex, scale = project_point(vertex, camera)
+
+                if draw_vertices and vertex is not None:
+                    pygame.draw.circle(
+                        surface,
+                        self.color,
+                        vertex,
+                        max(int(point_thickness * scale), 1),
+                    )

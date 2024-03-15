@@ -2,7 +2,8 @@ import threading
 import os
 from utility_objects.camera import Camera
 import numpy as np
-from settings import camera_move_speed, camera_rotate_speed, fps
+from settings import camera_move_speed, camera_rotate_speed, fps, show_fps
+from time import time
 
 
 class SapphireRenderer:
@@ -75,6 +76,8 @@ class SapphireRenderer:
         pygame.display.set_caption("Sapphire Renderer")
 
         while self.running:
+            frame_start = time()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -89,6 +92,11 @@ class SapphireRenderer:
             pygame.display.flip()
 
             pygame.time.Clock().tick(fps)
+
+            if show_fps:
+                pygame.display.set_caption(
+                    f"Sapphire Renderer - FPS: {int(1 / (time() - frame_start))}"
+                )
 
         pygame.quit()
 

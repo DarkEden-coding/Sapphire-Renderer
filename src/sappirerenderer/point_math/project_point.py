@@ -13,9 +13,6 @@ def project_point(point, camera: Camera):
 
     rotated_point = camera_matrix @ (point - camera.position)
 
-    if rotated_point[1] <= 0:
-        return None
-
     projected_point = np.array(
         [
             (rotated_point[0] * camera.focal_length) / rotated_point[1],
@@ -23,4 +20,14 @@ def project_point(point, camera: Camera):
         ]
     )
 
-    return projected_point + np.array([camera.size[0] / 2, camera.size[1] / 2])
+    if rotated_point[1] < 0:
+        return None, 1
+
+    scale_factor = 1 / np.sqrt(
+        rotated_point[0] ** 2 + rotated_point[1] ** 2 + rotated_point[2] ** 2
+    )
+
+    return (
+        projected_point + np.array([camera.size[0] / 2, camera.size[1] / 2]),
+        scale_factor,
+    )
