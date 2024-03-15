@@ -1,5 +1,5 @@
 draw_vertices = True
-draw_lines = False
+draw_lines = True
 
 line_thickness = 1
 point_thickness = 3

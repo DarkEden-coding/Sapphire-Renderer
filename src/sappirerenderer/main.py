@@ -7,7 +7,7 @@ from time import time
 
 
 class SapphireRenderer:
-    def __init__(self, width=500, height=500):
+    def __init__(self, width=1000, height=1000):
         """
         Initialize the renderer
         :param width: Width of the window
@@ -25,8 +25,10 @@ class SapphireRenderer:
 
         self.running = True
 
-        self.thread = threading.Thread(target=self.render_loop)
-        self.thread.start()
+        self.render_loop()
+
+        """self.thread = threading.Thread(target=self.render_loop)
+        self.thread.start()"""
 
     def load_objects(self):
         # go through all files in objects and load them
@@ -43,30 +45,30 @@ class SapphireRenderer:
         for obj in self.objects:
             obj.update()
 
-    def user_input(self, pygame):
+    def user_input(self, pygame, scale_factor=1.0):
         # wasd to move camera
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            self.camera.move_relative((camera_move_speed, 0, 0))
+            self.camera.move_relative((camera_move_speed * scale_factor, 0, 0))
         if keys[pygame.K_s]:
-            self.camera.move_relative((-camera_move_speed, 0, 0))
+            self.camera.move_relative((-camera_move_speed * scale_factor, 0, 0))
         if keys[pygame.K_a]:
-            self.camera.move_relative((0, camera_move_speed, 0))
+            self.camera.move_relative((0, camera_move_speed * scale_factor, 0))
         if keys[pygame.K_d]:
-            self.camera.move_relative((0, -camera_move_speed, 0))
+            self.camera.move_relative((0, -camera_move_speed * scale_factor, 0))
         if keys[pygame.K_q]:
-            self.camera.move_relative((0, 0, camera_move_speed))
+            self.camera.move_relative((0, 0, camera_move_speed * scale_factor))
         if keys[pygame.K_e]:
-            self.camera.move_relative((0, 0, -camera_move_speed))
+            self.camera.move_relative((0, 0, -camera_move_speed * scale_factor))
 
         if keys[pygame.K_LEFT]:
-            self.camera.rotate_relative((0, -camera_rotate_speed))
+            self.camera.rotate_relative((0, -camera_rotate_speed * scale_factor))
         if keys[pygame.K_RIGHT]:
-            self.camera.rotate_relative((0, camera_rotate_speed))
+            self.camera.rotate_relative((0, camera_rotate_speed * scale_factor))
         if keys[pygame.K_UP]:
-            self.camera.rotate_relative((camera_rotate_speed, 0))
+            self.camera.rotate_relative((camera_rotate_speed * scale_factor, 0))
         if keys[pygame.K_DOWN]:
-            self.camera.rotate_relative((-camera_rotate_speed, 0))
+            self.camera.rotate_relative((-camera_rotate_speed * scale_factor, 0))
 
     def render_loop(self):
         import pygame
@@ -82,8 +84,6 @@ class SapphireRenderer:
                 if event.type == pygame.QUIT:
                     self.running = False
 
-            self.user_input(pygame)
-
             self.display.fill((255, 255, 255))
             self.update()
 
@@ -91,12 +91,16 @@ class SapphireRenderer:
                 obj.draw(self.display, self.camera)
             pygame.display.flip()
 
-            pygame.time.Clock().tick(fps)
+            # if fps is higher than fps setting, wait
+            if time() - frame_start < 1 / fps:
+                pygame.time.wait(int(1000 * (1 / fps - (time() - frame_start))))
+
+            real_fps = 1 / (time() - frame_start)
 
             if show_fps:
-                pygame.display.set_caption(
-                    f"Sapphire Renderer - FPS: {int(1 / (time() - frame_start))}"
-                )
+                pygame.display.set_caption(f"Sapphire Renderer - FPS: {int(real_fps)}")
+
+            self.user_input(pygame, fps / real_fps)
 
         pygame.quit()
 
