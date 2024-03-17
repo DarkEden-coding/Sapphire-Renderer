@@ -1,33 +1,29 @@
-from utility_objects.camera import Camera
 import numpy as np
+from numba import njit
 
 
-def project_point(point, camera: Camera):
-    """
-    Project a 3D point to 2D space using a camera
-    :param point: the 3D point to project in np.array([x, y, z])
-    :param camera: the camera object to project with
-    :return: np.array([x, y]) the 2D point
-    """
-    camera_matrix = camera.rotation_matrix
+@njit(fastmath=True)
+def project_point(point, rotation_matrix, camera_position, camera_size, focal_length):
+    rotated_point = rotation_matrix @ (point - camera_position)
+    y_rotated = rotated_point[1]
 
-    rotated_point = camera_matrix @ (point - camera.position)
-
-    projected_point = np.array(
-        [
-            (rotated_point[0] * camera.focal_length) / rotated_point[1],
-            (rotated_point[2] * camera.focal_length) / rotated_point[1],
-        ]
-    )
-
-    if rotated_point[1] < 0:
+    if y_rotated < 0:
         return None, 1
 
-    scale_factor = 1 / np.sqrt(
-        rotated_point[0] ** 2 + rotated_point[1] ** 2 + rotated_point[2] ** 2
-    )
+    focal_length_divided_by_y = focal_length / y_rotated
 
-    return (
-        projected_point + np.array([camera.size[0] / 2, camera.size[1] / 2]),
-        scale_factor,
-    )
+    projected_point = np.array([
+        rotated_point[0] * focal_length_divided_by_y,
+        -rotated_point[2] * focal_length_divided_by_y,
+    ])
+
+    offset_x = camera_size[0] / 2
+    offset_y = camera_size[1] / 2
+
+    offset_array = np.array([offset_x, offset_y])
+
+    projected_point += offset_array
+
+    scale_factor = 1 / np.linalg.norm(rotated_point)
+
+    return projected_point, scale_factor

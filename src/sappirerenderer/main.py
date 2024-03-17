@@ -1,9 +1,9 @@
-import threading
 import os
 from utility_objects.camera import Camera
 import numpy as np
-from settings import camera_move_speed, camera_rotate_speed, fps, show_fps
+from settings import camera_move_speed, camera_rotate_speed, fps, show_fps, lock_fps
 from time import time
+import threading
 
 
 class SapphireRenderer:
@@ -20,29 +20,62 @@ class SapphireRenderer:
 
         self.camera = Camera(self, position=np.array((0.0, -3.0, 0.0)))
 
-        self.objects = []
+        self.loaded_objects = []
+        self.instance_objects = []
         self.load_objects()
+
+        # self.add_object("Stl", args=("objects/suzanne.stl",))
+        self.add_object("Axes")
+        # make 5 random toruses with random positions
+        for _ in range(5):
+            obj = self.add_object(
+                "Torus",
+                args=(
+                    np.array(
+                        [
+                            0,
+                            0,
+                            0,
+                        ]
+                    ),
+                    (230, 192, 95),
+                ),
+            )
+            obj.move(
+                np.array(
+                    [
+                        np.random.uniform(-5, 5),
+                        np.random.uniform(-5, 5),
+                        np.random.uniform(-5, 5),
+                    ]
+                )
+            )
 
         self.running = True
 
-        self.render_loop()
-
-        """self.thread = threading.Thread(target=self.render_loop)
-        self.thread.start()"""
+        self.thread = threading.Thread(target=self.render_loop)
+        self.thread.start()
 
     def load_objects(self):
         # go through all files in objects and load them
         for file in os.listdir("objects"):
             if file.endswith(".py"):
                 exec(f"from objects.{file[:-3]} import *")
-                self.add_object(eval(f"{file[:1].upper()}{file[1:-3]}()"))
+                obj_class_name = (
+                    f"{file[:1].upper().replace('_', '')}{file[1:-3].replace('_', '')}"
+                )
+                self.loaded_objects.append((obj_class_name, eval(obj_class_name)))
 
-    def add_object(self, obj):
-        self.objects.append(obj)
+    def add_object(self, obj_name, args=None):
+        for obj_class_name, obj_class in self.loaded_objects:
+            if obj_class_name == obj_name:
+                obj = obj_class(*args) if args is not None else obj_class()
+                self.instance_objects.append(obj)
+                return obj
 
     def update(self):
         self.camera.update()
-        for obj in self.objects:
+        for obj in self.instance_objects:
             obj.update()
 
     def user_input(self, pygame, scale_factor=1.0):
@@ -57,18 +90,18 @@ class SapphireRenderer:
         if keys[pygame.K_d]:
             self.camera.move_relative((0, -camera_move_speed * scale_factor, 0))
         if keys[pygame.K_q]:
-            self.camera.move_relative((0, 0, camera_move_speed * scale_factor))
-        if keys[pygame.K_e]:
             self.camera.move_relative((0, 0, -camera_move_speed * scale_factor))
+        if keys[pygame.K_e]:
+            self.camera.move_relative((0, 0, camera_move_speed * scale_factor))
 
         if keys[pygame.K_LEFT]:
             self.camera.rotate_relative((0, -camera_rotate_speed * scale_factor))
         if keys[pygame.K_RIGHT]:
             self.camera.rotate_relative((0, camera_rotate_speed * scale_factor))
         if keys[pygame.K_UP]:
-            self.camera.rotate_relative((camera_rotate_speed * scale_factor, 0))
-        if keys[pygame.K_DOWN]:
             self.camera.rotate_relative((-camera_rotate_speed * scale_factor, 0))
+        if keys[pygame.K_DOWN]:
+            self.camera.rotate_relative((camera_rotate_speed * scale_factor, 0))
 
     def render_loop(self):
         import pygame
@@ -78,7 +111,7 @@ class SapphireRenderer:
         pygame.display.set_caption("Sapphire Renderer")
 
         while self.running:
-            frame_start = time()
+            frame_start = time() + 0.00001
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -87,12 +120,13 @@ class SapphireRenderer:
             self.display.fill((255, 255, 255))
             self.update()
 
-            for obj in self.objects:
+            for obj in self.instance_objects:
                 obj.draw(self.display, self.camera)
+
             pygame.display.flip()
 
             # if fps is higher than fps setting, wait
-            if time() - frame_start < 1 / fps:
+            if lock_fps and time() - frame_start < 1 / fps:
                 pygame.time.wait(int(1000 * (1 / fps - (time() - frame_start))))
 
             real_fps = 1 / (time() - frame_start)

@@ -2,14 +2,14 @@ import numpy as np
 from object_classes.vert_line_object import VertLineObject
 
 
-def generate_torus_points_and_segments(radius_major, radius_minor, resolution):
-    u = np.linspace(0, 2 * np.pi, resolution)
-    v = np.linspace(0, 2 * np.pi, resolution)
-    U, V = np.meshgrid(u, v)
+def generate_sphere_points_and_segments(radius, resolution):
+    theta = np.linspace(0, np.pi, resolution)
+    phi = np.linspace(0, 2 * np.pi, resolution)
+    THETA, PHI = np.meshgrid(theta, phi)
 
-    x = (radius_major + radius_minor * np.cos(V)) * np.cos(U)
-    y = (radius_major + radius_minor * np.cos(V)) * np.sin(U)
-    z = radius_minor * np.sin(V)
+    x = radius * np.sin(THETA) * np.cos(PHI)
+    y = radius * np.sin(THETA) * np.sin(PHI)
+    z = radius * np.cos(THETA)
 
     points = np.stack((x.flatten(), y.flatten(), z.flatten()), axis=-1)
 
@@ -31,8 +31,13 @@ def generate_torus_points_and_segments(radius_major, radius_minor, resolution):
     return points, np.array(segments)
 
 
-class Torus(VertLineObject):
-    def __init__(self, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0)):
-        vertices, lines = generate_torus_points_and_segments(2, 0.3, 20)
-
+class Sphere(VertLineObject):
+    def __init__(
+        self,
+        radius=1.0,
+        position=np.array([0.0, 0.0, 0.0]),
+        color=(0, 0, 0),
+        resolution=20,
+    ):
+        vertices, lines = generate_sphere_points_and_segments(radius, resolution)
         super().__init__(vertices, lines, position, color)
