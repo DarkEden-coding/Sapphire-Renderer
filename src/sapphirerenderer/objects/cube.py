@@ -1,4 +1,4 @@
-from object_classes.vert_line_object import VertLineObject
+from src.sapphirerenderer.object_classes.vert_line_object import VertLineObject
 import numpy as np
 
 
@@ -35,4 +35,4 @@ class Cube(VertLineObject):
 
         super().__init__(vertices, lines, position, color)
 
-        self.move(np.array([-size / 2, -size / 2, -size / 2]))
+        self.move_relative(np.array([-size / 2, -size / 2, -size / 2]))

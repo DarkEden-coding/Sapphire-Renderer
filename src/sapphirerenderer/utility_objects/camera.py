@@ -1,5 +1,5 @@
 import numpy as np
-from point_math.matricies import get_pitch_yaw_matrix
+from src.sapphirerenderer.point_math.matricies import get_pitch_yaw_matrix
 
 
 class Camera:

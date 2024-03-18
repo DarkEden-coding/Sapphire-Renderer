@@ -1,6 +1,6 @@
 import numpy as np
 from stl import mesh
-from object_classes.vert_line_object import VertLineObject
+from src.sapphirerenderer.object_classes.vert_line_object import VertLineObject
 
 
 class Stl(VertLineObject):

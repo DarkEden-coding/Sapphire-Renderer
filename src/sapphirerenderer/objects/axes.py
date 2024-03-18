@@ -1,4 +1,4 @@
-from object_classes.vert_line_object import VertLineObject
+from src.sapphirerenderer.object_classes.vert_line_object import VertLineObject
 import numpy as np
 
 

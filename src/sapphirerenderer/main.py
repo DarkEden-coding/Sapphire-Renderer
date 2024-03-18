@@ -7,11 +7,13 @@ import threading
 
 
 class SapphireRenderer:
-    def __init__(self, width=1000, height=1000):
+    def __init__(self, width=1000, height=1000, draw_axis=False, object_files=None):
         """
         Initialize the renderer
         :param width: Width of the window
         :param height: Height of the window
+        :param draw_axis: Draws the axis lines, use-full for debugging
+        ;param: object_files: Used for loading different objects, a list of python file paths
         """
         self.display = None
 
@@ -24,32 +26,8 @@ class SapphireRenderer:
         self.instance_objects = []
         self.load_objects()
 
-        # self.add_object("Stl", args=("objects/suzanne.stl",))
-        self.add_object("Axes")
-        # make 5 random toruses with random positions
-        for _ in range(5):
-            obj = self.add_object(
-                "Torus",
-                args=(
-                    np.array(
-                        [
-                            0,
-                            0,
-                            0,
-                        ]
-                    ),
-                    (230, 192, 95),
-                ),
-            )
-            obj.move(
-                np.array(
-                    [
-                        np.random.uniform(-5, 5),
-                        np.random.uniform(-5, 5),
-                        np.random.uniform(-5, 5),
-                    ]
-                )
-            )
+        if draw_axis:
+            self.add_object("Axes")
 
         self.running = True
 
@@ -67,6 +45,12 @@ class SapphireRenderer:
                 self.loaded_objects.append((obj_class_name, eval(obj_class_name)))
 
     def add_object(self, obj_name, args=None):
+        """
+        Adds an object to the scene
+        :param obj_name: The class name of the object
+        :param args: The args to pass to the init of the class
+        :return: returns the object created
+        """
         for obj_class_name, obj_class in self.loaded_objects:
             if obj_class_name == obj_name:
                 obj = obj_class(*args) if args is not None else obj_class()
@@ -141,6 +125,3 @@ class SapphireRenderer:
     def stop(self):
         self.running = False
         self.thread.join()
-
-
-renderer = SapphireRenderer()
