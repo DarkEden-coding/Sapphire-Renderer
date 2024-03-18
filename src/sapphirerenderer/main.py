@@ -1,7 +1,13 @@
 import os
-from utility_objects.camera import Camera
+from src.sapphirerenderer.utility_objects.camera import Camera
 import numpy as np
-from settings import camera_move_speed, camera_rotate_speed, fps, show_fps, lock_fps
+from src.sapphirerenderer.settings import (
+    camera_move_speed,
+    camera_rotate_speed,
+    fps,
+    show_fps,
+    lock_fps,
+)
 from time import time
 import threading
 
