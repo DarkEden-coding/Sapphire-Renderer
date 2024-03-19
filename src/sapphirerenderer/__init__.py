@@ -1,1 +1,1 @@
-from src.sapphirerenderer.main import SapphireRenderer
+from sapphirerenderer.main import SapphireRenderer
