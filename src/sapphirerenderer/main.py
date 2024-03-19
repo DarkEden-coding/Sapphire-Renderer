@@ -10,6 +10,7 @@ from src.sapphirerenderer.settings import (
 )
 from time import time
 import threading
+import sys
 
 
 class SapphireRenderer:
@@ -41,8 +42,9 @@ class SapphireRenderer:
         self.thread.start()
 
     def load_objects(self):
+        sys.path.append(os.path.dirname(__file__))
         # go through all files in objects and load them
-        for file in os.listdir(os.path.dirname(__file__) + "/objects"):
+        for file in os.listdir("objects"):
             if file.endswith(".py"):
                 exec(f"from objects.{file[:-3]} import *")
                 obj_class_name = (
