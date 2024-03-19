@@ -42,7 +42,7 @@ class SapphireRenderer:
 
     def load_objects(self):
         # go through all files in objects and load them
-        for file in os.listdir("objects"):
+        for file in os.listdir(os.path.dirname(__file__) + "/objects"):
             if file.endswith(".py"):
                 exec(f"from objects.{file[:-3]} import *")
                 obj_class_name = (
