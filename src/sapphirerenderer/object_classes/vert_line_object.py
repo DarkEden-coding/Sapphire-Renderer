@@ -1,14 +1,14 @@
-from src.sapphirerenderer.object_classes.base_object import Object
+from ..object_classes.base_object import Object
 import numpy as np
 import pygame
-from src.sapphirerenderer.settings import (
+from ..settings import (
     draw_vertices,
     draw_lines,
     line_thickness,
     point_thickness,
 )
-from src.sapphirerenderer.point_math.project_point import project_point
-from src.sapphirerenderer.point_math.matricies import get_pitch_yaw_roll_matrix
+from ..point_math.project_point import project_point
+from ..point_math.matricies import get_pitch_yaw_roll_matrix
 
 
 class VertLineObject(Object):

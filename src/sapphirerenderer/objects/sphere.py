@@ -1,5 +1,5 @@
 import numpy as np
-from src.sapphirerenderer.object_classes.vert_line_object import VertLineObject
+from ..object_classes.vert_line_object import VertLineObject
 
 
 def generate_sphere_points_and_segments(radius, resolution):

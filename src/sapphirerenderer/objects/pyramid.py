@@ -1,5 +1,5 @@
 import numpy as np
-from src.sapphirerenderer.object_classes.vert_line_object import VertLineObject
+from ..object_classes.vert_line_object import VertLineObject
 
 
 def generate_pyramid_points_and_segments(base_side_length, height):

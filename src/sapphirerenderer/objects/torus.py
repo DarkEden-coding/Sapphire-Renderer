@@ -1,5 +1,5 @@
 import numpy as np
-from src.sapphirerenderer.object_classes.vert_line_object import VertLineObject
+from ..object_classes.vert_line_object import VertLineObject
 
 
 def generate_torus_points_and_segments(radius_major, radius_minor, resolution):

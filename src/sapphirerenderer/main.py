@@ -1,7 +1,7 @@
 import os
-from src.sapphirerenderer.utility_objects.camera import Camera
+from .utility_objects.camera import Camera
 import numpy as np
-from src.sapphirerenderer.settings import (
+from .settings import (
     camera_move_speed,
     camera_rotate_speed,
     fps,
@@ -10,7 +10,6 @@ from src.sapphirerenderer.settings import (
 )
 from time import time
 import threading
-import sys
 
 
 class SapphireRenderer:
@@ -42,11 +41,10 @@ class SapphireRenderer:
         self.thread.start()
 
     def load_objects(self):
-        sys.path.append(os.path.dirname(__file__))
         # go through all files in objects and load them
-        for file in os.listdir("objects"):
+        for file in os.listdir(os.path.dirname(__file__) + "/objects"):
             if file.endswith(".py"):
-                exec(f"from objects.{file[:-3]} import *")
+                exec(f"from .objects.{file[:-3]} import *")
                 obj_class_name = (
                     f"{file[:1].upper().replace('_', '')}{file[1:-3].replace('_', '')}"
                 )
