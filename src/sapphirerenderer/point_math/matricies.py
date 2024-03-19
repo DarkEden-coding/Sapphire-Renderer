@@ -28,4 +28,4 @@ def get_pitch_yaw_matrix(pitch, yaw):
 
 
 def get_pitch_yaw_roll_matrix(yaw, pitch, roll):
-    return np.dot(get_pitch_yaw_matrix(yaw, pitch), get_roll_matrix(roll))
+    return np.dot(get_pitch_yaw_matrix(yaw, pitch), get_pitch_matrix(roll))

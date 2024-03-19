@@ -63,6 +63,14 @@ class SapphireRenderer:
                 self.instance_objects.append(obj)
                 return obj
 
+    def remove_object(self, obj):
+        """
+        Removes an object from the scene
+        :param obj: The object to remove
+        :return:
+        """
+        self.instance_objects.remove(obj)
+
     def update(self):
         self.camera.update()
         for obj in self.instance_objects:
@@ -111,7 +119,8 @@ class SapphireRenderer:
             self.update()
 
             for obj in self.instance_objects:
-                obj.draw(self.display, self.camera)
+                if not obj.is_hidden():
+                    obj.draw(self.display, self.camera)
 
             pygame.display.flip()
 

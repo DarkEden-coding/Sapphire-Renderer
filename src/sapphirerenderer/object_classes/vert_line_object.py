@@ -9,6 +9,7 @@ from ..settings import (
 )
 from ..point_math.project_point import project_point
 from ..point_math.matricies import get_pitch_yaw_roll_matrix
+from ..point_math.average_points import average_points
 
 
 class VertLineObject(Object):
@@ -19,12 +20,15 @@ class VertLineObject(Object):
         position=np.array([0, 0, 0], dtype=float),
         color=(0, 0, 0),
     ):
-        super().__init__(position, color)
+        super().__init__(position=position, color=color)
         self.original_vertices = vertices.copy()
         self.vertices = vertices.copy()
         self.lines = lines
         self.position = np.array([0, 0, 0], dtype=float)
         self.color = color
+        self.rotation = np.array([0, 0, 0], dtype=float)
+
+        self.center_point = average_points(self.vertices)
 
         self.move_absolute(position)
 
@@ -37,6 +41,7 @@ class VertLineObject(Object):
         self.position += vector
         for i in range(len(self.vertices)):
             self.vertices[i] += vector
+        self.center_point = average_points(self.vertices)
 
     def move_absolute(self, vector):
         """
@@ -44,13 +49,29 @@ class VertLineObject(Object):
         :param vector: the position to move to
         :return:
         """
+        vector = np.array(vector, dtype=float)
         self.position = vector
         for i in range(len(self.vertices)):
             self.vertices[i] = self.original_vertices[i] + vector
+        self.center_point = average_points(self.vertices)
 
-    def rotate(self, pitch, yaw, roll):
-        rotation_matrix = get_pitch_yaw_roll_matrix(pitch, yaw, roll)
+    def __rotate(self, x_axis, y_axis, z_axis):
+        rotation_matrix = get_pitch_yaw_roll_matrix(x_axis, z_axis, y_axis)
         self.vertices = np.dot(self.vertices, rotation_matrix.T)
+        self.original_vertices = np.dot(self.original_vertices, rotation_matrix.T)
+        self.rotation += np.array([x_axis, z_axis, y_axis], dtype=float)
+
+    def rotate_local(self, x_axis, y_axis, z_axis):
+        self.vertices -= self.center_point
+        self.__rotate(x_axis, y_axis, z_axis)
+        self.vertices += self.center_point
+
+    def rotate_around_point(
+        self, x_axis, y_axis, z_axis, point=np.array([0, 0, 0], dtype=float)
+    ):
+        self.vertices -= point
+        self.__rotate(x_axis, y_axis, z_axis)
+        self.vertices += point
 
     def __str__(self):
         return self.__class__.__name__

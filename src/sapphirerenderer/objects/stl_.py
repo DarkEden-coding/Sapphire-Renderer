@@ -22,4 +22,4 @@ class Stl(VertLineObject):
         super().__init__(vertices, np.array(line_segments), position, color)
 
     def update(self):
-        self.rotate(0.01, 0.01, 0.01)
+        self.rotate_local(0.01, 0.01, 0.01)
