@@ -6,10 +6,10 @@ class Axes(VertLineObject):
     def __init__(self, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0)):
         vertices = np.array(
             [
-                np.array([0, 0, 0]),
-                np.array([1, 0, 0]),
-                np.array([0, 1, 0]),
-                np.array([0, 0, 1]),
+                [0, 0, 0],
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1],
             ],
             dtype=float,
         )

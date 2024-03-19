@@ -56,23 +56,23 @@ class VertLineObject(Object):
         return self.__class__.__name__
 
     def draw(self, surface, camera):
+        moved_vertices = self.vertices - camera.position
+        reshaped_vertices = moved_vertices.reshape(-1, 1, moved_vertices.shape[1])
+        rotated_vertices = np.sum(camera.rotation_matrix * reshaped_vertices, axis=-1)
+
         if self.lines is not None:
             for line in self.lines:
-                start = self.vertices[line[0]]
-                end = self.vertices[line[1]]
+                start = rotated_vertices[line[0]]
+                end = rotated_vertices[line[1]]
 
                 start, s_scale = project_point(
                     start,
-                    camera.rotation_matrix,
-                    camera.position,
-                    camera.size,
+                    camera.offset_array,
                     camera.focal_length,
                 )
                 end, e_scale = project_point(
                     end,
-                    camera.rotation_matrix,
-                    camera.position,
-                    camera.size,
+                    camera.offset_array,
                     camera.focal_length,
                 )
 
@@ -107,9 +107,7 @@ class VertLineObject(Object):
             for vertex in self.vertices:
                 vertex, scale = project_point(
                     vertex,
-                    camera.rotation_matrix,
-                    camera.position,
-                    camera.size,
+                    camera.offset_array,
                     camera.focal_length,
                 )
 

@@ -14,7 +14,8 @@ class Camera:
         self.rotation = rotation
         self.fov = fov
         self.rotation_matrix = self.get_rotation_matrix()
-        self.size = (renderer.width, renderer.height)
+        self.size = np.array((renderer.width, renderer.height))
+        self.offset_array = np.array([self.size[0] / 2, self.size[1] / 2])
         self.focal_length = (self.size[0] / 2) / np.tan((self.fov / 2) * (np.pi / 180))
 
     def move_absolute(self, position):
