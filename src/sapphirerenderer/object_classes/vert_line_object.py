@@ -20,8 +20,8 @@ class VertLineObject(Object):
         color=(0, 0, 0),
     ):
         super().__init__(position, color)
-        self.original_vertices = vertices
-        self.vertices = vertices
+        self.original_vertices = vertices.copy()
+        self.vertices = vertices.copy()
         self.lines = lines
         self.position = np.array([0, 0, 0], dtype=float)
         self.color = color
