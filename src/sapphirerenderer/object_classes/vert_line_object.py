@@ -79,7 +79,7 @@ class VertLineObject(Object):
         return self.__class__.__name__
 
     def draw(self, surface, camera):
-        moved_vertices = self.vertices - camera.position
+        moved_vertices = self.vertices.copy() - camera.position
         reshaped_vertices = moved_vertices.reshape(-1, 1, moved_vertices.shape[1])
         rotated_vertices = np.sum(camera.rotation_matrix * reshaped_vertices, axis=-1)
 
@@ -127,7 +127,7 @@ class VertLineObject(Object):
                         max(int(line_thickness * (s_scale + e_scale) / 2), 1),
                     )
         else:
-            for vertex in self.vertices:
+            for vertex in self.vertices.copy():
                 vertex, scale = project_point(
                     vertex,
                     camera.offset_array,
