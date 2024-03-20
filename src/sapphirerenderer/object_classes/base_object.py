@@ -8,12 +8,11 @@ class Object:
         rotation=np.array((0, 0, 0)),
         scale=1,
         color=(0, 0, 0),
-        hidden=False,
     ):
         self.position = position
         self.rotation = rotation
         self.scale = scale
-        self.hidden = hidden
+        self.hidden = True
         self.color = color
 
     def is_hidden(self):

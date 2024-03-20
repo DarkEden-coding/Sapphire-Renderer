@@ -32,6 +32,8 @@ class VertLineObject(Object):
 
         self.move_absolute(position)
 
+        self.show()
+
     def move_relative(self, vector):
         """
         Move the object by a relative amount
