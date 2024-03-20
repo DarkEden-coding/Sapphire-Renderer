@@ -11,7 +11,7 @@ class ParticleManager:
         if hide_parent:
             parent_object.hide()
 
-    def add_particle(self, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0)):
+    def add_particle(self, position=None, color=None):
         """
         Add a particle to the particle manager
         :param position: the position of the particle
@@ -22,6 +22,12 @@ class ParticleManager:
             raise AttributeError(
                 "The parent object must have a copy method to be used as a particle"
             )
+
+        if position is None:
+            position = self.parent_object.get_position()
+
+        if color is None:
+            color = self.parent_object.get_color()
 
         particle = self.renderer.direct_add_object(self.parent_object.copy())
         particle.move_absolute(position)
