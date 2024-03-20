@@ -51,7 +51,7 @@ class Torus(VertLineObject):
 
         super().__init__(vertices, lines, position, color)
 
-    def __copy__(self):
+    def copy(self):
         return Torus(
             position=self.position,
             color=self.color,
