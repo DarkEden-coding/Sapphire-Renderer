@@ -36,12 +36,26 @@ class Torus(VertLineObject):
         self,
         position=np.array([0.0, 0.0, 0.0]),
         color=(0, 0, 0),
-        radius_major=2,
-        radius_minor=0.3,
+        radius_major=1.5,
+        radius_minor=0.5,
         resolution=20,
     ):
         vertices, lines = generate_torus_points_and_segments(
             radius_major, radius_minor, resolution
         )
+        self.radius_major = radius_major
+        self.radius_minor = radius_minor
+        self.resolution = resolution
+        self.position = position
+        self.color = color
 
         super().__init__(vertices, lines, position, color)
+
+    def __copy__(self):
+        return Torus(
+            position=self.position,
+            color=self.color,
+            radius_major=1.5,
+            radius_minor=0.5,
+            resolution=20,
+        )

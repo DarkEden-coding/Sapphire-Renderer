@@ -18,6 +18,11 @@ class ParticleManager:
         :param color: the color of the particle
         :return: the particle object
         """
+        if not hasattr(self.parent_object, "copy"):
+            raise AttributeError(
+                "The parent object must have a copy method to be used as a particle"
+            )
+
         particle = self.renderer.direct_add_object(self.parent_object.copy())
         particle.move_absolute(position)
         particle.set_color(color)
