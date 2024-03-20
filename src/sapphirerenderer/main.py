@@ -63,6 +63,15 @@ class SapphireRenderer:
                 self.instance_objects.append(obj)
                 return obj
 
+    def direct_add_object(self, obj):
+        """
+        Adds an object to the scene
+        :param obj: The object to add
+        :return:
+        """
+        self.instance_objects.append(obj)
+        return obj
+
     def remove_object(self, obj):
         """
         Removes an object from the scene

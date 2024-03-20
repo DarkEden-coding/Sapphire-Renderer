@@ -32,7 +32,16 @@ def generate_torus_points_and_segments(radius_major, radius_minor, resolution):
 
 
 class Torus(VertLineObject):
-    def __init__(self, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0)):
-        vertices, lines = generate_torus_points_and_segments(2, 0.3, 20)
+    def __init__(
+        self,
+        position=np.array([0.0, 0.0, 0.0]),
+        color=(0, 0, 0),
+        radius_major=2,
+        radius_minor=0.3,
+        resolution=20,
+    ):
+        vertices, lines = generate_torus_points_and_segments(
+            radius_major, radius_minor, resolution
+        )
 
         super().__init__(vertices, lines, position, color)

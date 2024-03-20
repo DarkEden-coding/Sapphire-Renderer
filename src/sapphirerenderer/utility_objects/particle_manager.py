@@ -18,7 +18,7 @@ class ParticleManager:
         :param color: the color of the particle
         :return: the particle object
         """
-        particle = self.renderer.add_object(str(self.parent_object))
+        particle = self.renderer.direct_add_object(self.parent_object.copy())
         particle.move_absolute(position)
         particle.set_color(color)
 
