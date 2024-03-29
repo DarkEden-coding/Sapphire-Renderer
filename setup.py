@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-with open("README.md", "r", encoding="utf-8") as fh:
+with open("readme.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 with open("requirements.txt", "r", encoding="utf-8") as f:
@@ -8,7 +8,7 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
 
 setup(
     name="sapphire-renderer",
-    version="0.0.19",
+    version="0.0.2",
     author="Dark_Eden",
     author_email="darkedenc9@gmail.com",
     description="A package to easily render simple 3D scenes",
