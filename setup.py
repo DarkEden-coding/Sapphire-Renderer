@@ -1,14 +1,14 @@
 from setuptools import setup, find_packages
 
-with open("Sapphire-renderer/readme.md", "r", encoding="utf-8") as fh:
+with open("Sapphire-Renderer/readme.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-with open("Sapphire-renderer/requirements.txt", "r", encoding="utf-8") as f:
+with open("Sapphire-Renderer/requirements.txt", "r", encoding="utf-8") as f:
     install_requires = f.read().splitlines()
 
 setup(
     name="sapphire-renderer",
-    version="0.0.21",
+    version="0.0.22",
     author="Dark_Eden",
     author_email="darkedenc9@gmail.com",
     description="A package to easily render simple 3D scenes",
