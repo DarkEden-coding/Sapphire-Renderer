@@ -13,7 +13,7 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
 
 setup(
     name="sapphire-renderer",
-    version="0.0.24",
+    version="0.0.25",
     author="Dark_Eden",
     author_email="darkedenc9@gmail.com",
     description="A package to easily render simple 3D scenes",
