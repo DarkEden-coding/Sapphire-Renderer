@@ -1,4 +1,9 @@
 from setuptools import setup, find_packages
+import os
+
+# print current directory files
+
+print(os.listdir())
 
 with open("readme.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
