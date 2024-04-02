@@ -88,6 +88,10 @@ class SapphireRenderer:
     def user_input(self, pygame, scale_factor=1.0):
         # wasd to move camera
         keys = pygame.key.get_pressed()
+        # if shift is pressed, move faster
+        if keys[pygame.K_LSHIFT]:
+            scale_factor *= 2
+
         if keys[pygame.K_w]:
             self.camera.move_relative((camera_move_speed * scale_factor, 0, 0))
         if keys[pygame.K_s]:

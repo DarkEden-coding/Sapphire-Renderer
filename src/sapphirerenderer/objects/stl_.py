@@ -20,6 +20,3 @@ class Stl(VertLineObject):
                 line_segments.append((p1, p2))
 
         super().__init__(vertices, np.array(line_segments), position, color)
-
-    def update(self):
-        self.rotate_local(0.01, 0.01, 0.01)

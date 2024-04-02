@@ -29,6 +29,9 @@ class Object:
     def set_position(self, position):
         self.position = position
 
+    def move_relative(self, vector):
+        self.position += vector
+
     def set_rotation(self, rotation):
         self.rotation = rotation
 
