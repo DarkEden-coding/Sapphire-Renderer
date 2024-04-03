@@ -23,7 +23,7 @@ class VertLineObject(Object):
     ):
         super().__init__(position=position, color=color)
         self.original_vertices = vertices.copy()
-        self.vertices = vertices.copy()
+        self.vertices = vertices
         self.lines = lines
         self.position = np.array([0, 0, 0], dtype=float)
         self.color = color
@@ -113,60 +113,37 @@ class VertLineObject(Object):
     def draw(self, surface, camera):
         self._wait_for_ambiguous()
 
-        moved_vertices = self.vertices.copy() - camera.position
+        moved_vertices = self.vertices - camera.position
         reshaped_vertices = moved_vertices.reshape(-1, 1, moved_vertices.shape[1])
         rotated_vertices = np.sum(camera.rotation_matrix * reshaped_vertices, axis=-1)
 
-        if self.lines is not None:
+        projected_vertices = [
+            project_point(
+                vertex,
+                camera.offset_array,
+                camera.focal_length,
+            )
+            for vertex in rotated_vertices
+        ]
+
+        if self.lines is not None and draw_lines:
             for line in self.lines:
-                start = rotated_vertices[line[0]]
-                end = rotated_vertices[line[1]]
-
-                start, s_scale = project_point(
-                    start,
-                    camera.offset_array,
-                    camera.focal_length,
-                )
-                end, e_scale = project_point(
-                    end,
-                    camera.offset_array,
-                    camera.focal_length,
-                )
-
-                if draw_vertices:
-                    if start is not None:
-                        pygame.draw.circle(
-                            surface,
-                            self.color,
-                            start,
-                            max(int(point_thickness * s_scale), 1),
-                        )
-                    if end is not None:
-                        pygame.draw.circle(
-                            surface,
-                            self.color,
-                            end,
-                            max(int(point_thickness * e_scale), 1),
-                        )
+                start, s_scale = projected_vertices[line[0]]
+                end, e_scale = projected_vertices[line[1]]
 
                 if start is None or end is None:
                     continue
 
-                if draw_lines:
-                    pygame.draw.line(
-                        surface,
-                        line[2] if len(line) > 2 else self.color,
-                        start,
-                        end,
-                        max(int(line_thickness * (s_scale + e_scale) / 2), 1),
-                    )
-        else:
-            for vertex in self.vertices.copy():
-                vertex, scale = project_point(
-                    vertex,
-                    camera.offset_array,
-                    camera.focal_length,
+                pygame.draw.line(
+                    surface,
+                    line[2] if len(line) > 2 else self.color,
+                    start,
+                    end,
+                    max(int(line_thickness * (s_scale + e_scale) / 2), 1),
                 )
+        if draw_vertices:
+            for vertex in projected_vertices:
+                vertex, scale = vertex
 
                 if draw_vertices and vertex is not None:
                     pygame.draw.circle(

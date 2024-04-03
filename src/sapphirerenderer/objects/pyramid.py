@@ -34,10 +34,10 @@ def generate_pyramid_points_and_segments(base_side_length, height):
 class Pyramid(VertLineObject):
     def __init__(
         self,
-        base_side_length=1.0,
-        height=1.0,
         position=np.array([0.0, 0.0, 0.0]),
         color=(0, 0, 0),
+        base_side_length=1.0,
+        height=1.0,
     ):
         vertices, lines = generate_pyramid_points_and_segments(base_side_length, height)
         super().__init__(vertices, lines, position, color)

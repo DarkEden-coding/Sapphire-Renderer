@@ -131,7 +131,15 @@ class SapphireRenderer:
             self.display.fill((255, 255, 255))
             self.update()
 
-            for obj in self.instance_objects:
+            instance_objects = self.instance_objects.copy()
+
+            # sort objects by distance from camera, reverse so that objects closer to camera are drawn last
+            instance_objects.sort(
+                key=lambda obj: np.linalg.norm(obj.position - self.camera.position),
+                reverse=True,
+            )
+
+            for obj in instance_objects:
                 if not obj.is_hidden():
                     obj.draw(self.display, self.camera)
 
