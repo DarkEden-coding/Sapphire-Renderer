@@ -10,7 +10,6 @@ from ..settings import (
 from ..point_math.project_point import project_point
 from ..point_math.matricies import get_pitch_yaw_roll_matrix
 from ..point_math.average_points import average_points
-from time import sleep
 
 
 class VertLineObject(Object):
@@ -37,14 +36,6 @@ class VertLineObject(Object):
         self.move_absolute(position)
 
         self.show()
-
-    def _wait_for_draw(self):
-        while self.drawing:
-            sleep(0.001)
-
-    def _wait_for_ambiguous(self):
-        while self.ambiguous:
-            sleep(0.001)
 
     def move_relative(self, vector):
         """

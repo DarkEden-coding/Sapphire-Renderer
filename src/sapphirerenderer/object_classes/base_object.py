@@ -1,4 +1,5 @@
 import numpy as np
+from time import sleep
 
 
 class Object:
@@ -14,6 +15,17 @@ class Object:
         self.scale = scale
         self.hidden = True
         self.color = color
+
+        self.drawing = False
+        self.ambiguous = False
+
+    def _wait_for_draw(self):
+        while self.drawing:
+            sleep(0.001)
+
+    def _wait_for_ambiguous(self):
+        while self.ambiguous:
+            sleep(0.001)
 
     def is_hidden(self):
         return self.hidden
