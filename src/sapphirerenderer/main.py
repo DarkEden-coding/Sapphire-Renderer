@@ -11,6 +11,8 @@ from .settings import (
 from time import time
 import threading
 
+average_fps_list = []
+
 
 class SapphireRenderer:
     def __init__(self, width=1000, height=1000, draw_axis=False, object_files=None):
@@ -150,9 +152,15 @@ class SapphireRenderer:
                 pygame.time.wait(int(1000 * (1 / fps - (time() - frame_start))))
 
             real_fps = 1 / (time() - frame_start)
+            average_fps_list.append(real_fps)
+
+            average_fps = sum(average_fps_list) / len(average_fps_list)
+
+            if len(average_fps_list) > 10:
+                average_fps_list.pop(0)
 
             if show_fps:
-                pygame.display.set_caption(f"Sapphire Renderer - FPS: {int(real_fps)}")
+                pygame.display.set_caption(f"Sapphire Renderer - FPS: {int(average_fps)}")
 
             self.user_input(pygame, fps / real_fps)
 
