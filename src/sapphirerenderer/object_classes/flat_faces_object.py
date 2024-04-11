@@ -4,12 +4,25 @@ from ..point_math.average_points import average_points
 import numpy as np
 from ..point_math.project_point import project_point
 from ..point_math.matricies import get_pitch_yaw_roll_matrix
+from numba import njit
 
 pygame.init()
 
 
+@njit(fastmath=True)
+def get_face_distances(vertices, camera_position):
+    return [np.linalg.norm(vertex - camera_position) for vertex in vertices]
+
+
 class FlatFacesObject(Object):
-    def __init__(self, vertices, faces, position=np.array([0, 0, 0]), color=(0, 0, 0)):
+    def __init__(
+        self,
+        vertices,
+        faces,
+        position=np.array([0, 0, 0]),
+        color=(0, 0, 0),
+        shadow=False,
+    ):
         self.original_vertices = vertices.copy()
         self.center_point = average_points(vertices)
         self.position = position
@@ -18,6 +31,8 @@ class FlatFacesObject(Object):
         self.vertices = vertices
         self.faces = faces
         self.rotation = np.array([0, 0, 0], dtype=float)
+        self.shadow = shadow
+        self.negative_rotation_matrix = get_pitch_yaw_roll_matrix(*-self.rotation)
 
         self.drawing = False
         self.ambiguous = False
@@ -65,11 +80,25 @@ class FlatFacesObject(Object):
         self.vertices = np.dot(self.vertices, rotation_matrix.T)
         self.original_vertices = np.dot(self.original_vertices, rotation_matrix.T)
         self.rotation += np.array([x_axis, z_axis, y_axis], dtype=float)
+        self.negative_rotation_matrix = get_pitch_yaw_roll_matrix(*-self.rotation)
         self.ambiguous = False
 
     def rotate_local(self, x_axis, y_axis, z_axis):
-        self._wait_for_draw()
+        """
+        Rotate the object around its center point
+        :param x_axis: x axis rotation in degrees
+        :param y_axis: y axis rotation in degrees
+        :param z_axis: z axis rotation in degrees
+        :return:
+        """
+        # convert to radians
+        x_axis, y_axis, z_axis = (
+            np.radians(x_axis),
+            np.radians(y_axis),
+            np.radians(z_axis),
+        )
 
+        self._wait_for_draw()
         self.ambiguous = True
         self.vertices -= self.center_point
         self.__rotate(x_axis, y_axis, z_axis)
@@ -79,6 +108,22 @@ class FlatFacesObject(Object):
     def rotate_around_point(
         self, x_axis, y_axis, z_axis, point=np.array([0, 0, 0], dtype=float)
     ):
+        """
+        Rotate the object around a point
+        :param x_axis: x axis rotation in degrees
+        :param y_axis: y axis rotation in degrees
+        :param z_axis: z axis rotation in degrees
+        :param point: the point to rotate around
+        :return:
+        """
+
+        # convert to radians
+        x_axis, y_axis, z_axis = (
+            np.radians(x_axis),
+            np.radians(y_axis),
+            np.radians(z_axis),
+        )
+
         self._wait_for_draw()
 
         self.ambiguous = True
@@ -91,12 +136,8 @@ class FlatFacesObject(Object):
         self._wait_for_ambiguous()
         self.drawing = True
 
-        # sort faces by inverse distance from camera
-        face_distances = [
-            np.linalg.norm(vertex - camera.position) for vertex in self.vertices
-        ]
+        face_distances = get_face_distances(self.vertices, camera.position)
 
-        # Sort faces by the mean of inverse distances from camera
         self.faces = sorted(
             self.faces,
             key=lambda face: np.mean([face_distances[vertex] for vertex in face[0]]),
@@ -119,6 +160,18 @@ class FlatFacesObject(Object):
         for face in self.faces:
             face_verts = face[0]
             face_color = face[1] if len(face) > 1 else self.color
+            face_normal = face[2] if len(face) > 2 else None
+
+            # rotate face normal by object rotation
+            if face_normal is not None and self.shadow:
+                face_normal = np.dot(face_normal, self.negative_rotation_matrix)
+
+                shadow_normal = ((face_normal[2] + 255) / 510) * 255
+
+                # dim the color based on the shadow_normal
+                face_color = tuple(
+                    int(color * shadow_normal / 255) for color in face_color
+                )
 
             if any(
                 vertex is None

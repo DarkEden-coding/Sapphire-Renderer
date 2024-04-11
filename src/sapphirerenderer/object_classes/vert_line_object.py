@@ -76,26 +76,48 @@ class VertLineObject(Object):
         self.vertices = np.dot(self.vertices, rotation_matrix.T)
         self.original_vertices = np.dot(self.original_vertices, rotation_matrix.T)
         self.rotation += np.array([x_axis, z_axis, y_axis], dtype=float)
+        self.rotation_matrix = get_pitch_yaw_roll_matrix(*self.rotation)
         self.ambiguous = False
 
     def rotate_local(self, x_axis, y_axis, z_axis):
-        self._wait_for_draw()
+        """
+        Rotate the object around a point
+        :param x_axis: x axis rotation in degrees
+        :param y_axis: y axis rotation in degrees
+        :param z_axis: z axis rotation in degrees
+        :param point: the point to rotate around
+        :return:
+        """
 
-        self.ambiguous = True
-        self.vertices -= self.center_point
-        self.__rotate(x_axis, y_axis, z_axis)
-        self.vertices += self.center_point
-        self.ambiguous = False
+        self.rotate_around_point(x_axis, y_axis, z_axis, self.center_point)
 
     def rotate_around_point(
         self, x_axis, y_axis, z_axis, point=np.array([0, 0, 0], dtype=float)
     ):
+        """
+        Rotate the object around a point
+        :param x_axis: x axis rotation in degrees
+        :param y_axis: y axis rotation in degrees
+        :param z_axis: z axis rotation in degrees
+        :param point: the point to rotate around
+        :return:
+        """
+
+        # convert to radians
+        x_axis, y_axis, z_axis = (
+            np.radians(x_axis),
+            np.radians(y_axis),
+            np.radians(z_axis),
+        )
+
         self._wait_for_draw()
 
         self.ambiguous = True
         self.vertices -= point
         self.__rotate(x_axis, y_axis, z_axis)
         self.vertices += point
+        self.center_point = average_points(self.vertices)
+
         self.ambiguous = False
 
     def __str__(self):

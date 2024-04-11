@@ -46,11 +46,12 @@ class SapphireRenderer:
         # go through all files in objects and load them
         for file in os.listdir(os.path.dirname(__file__) + "/objects"):
             if file.endswith(".py"):
-                exec(f"from .objects.{file[:-3]} import *")
-                obj_class_name = (
-                    f"{file[:1].upper().replace('_', '')}{file[1:-3].replace('_', '')}"
-                )
-                self.loaded_objects.append((obj_class_name, eval(obj_class_name)))
+                try:
+                    exec(f"from .objects.{file[:-3]} import *")
+                    obj_class_name = f"{file[:1].upper().replace('_', '')}{file[1:-3].replace('_', '')}"
+                    self.loaded_objects.append((obj_class_name, eval(obj_class_name)))
+                except NameError:
+                    print(f"Error loading object from file {file}")
 
     def add_object(self, obj_name, args=None):
         """
@@ -160,7 +161,9 @@ class SapphireRenderer:
                 average_fps_list.pop(0)
 
             if show_fps:
-                pygame.display.set_caption(f"Sapphire Renderer - FPS: {int(average_fps)}")
+                pygame.display.set_caption(
+                    f"Sapphire Renderer - FPS: {int(average_fps)}"
+                )
 
             self.user_input(pygame, fps / real_fps)
 

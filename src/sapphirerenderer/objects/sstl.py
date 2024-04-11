@@ -25,9 +25,13 @@ class Sstl(FlatFacesObject):
                 index = np.nonzero((vertices == vertex).all(axis=1))[0][0]
                 face_vertices.append(index)
             (
-                faces.append((face_vertices, color))
+                faces.append([face_vertices, color])
                 if not random_color
-                else faces.append((face_vertices, np.random.randint(0, 255, 3)))
+                else faces.append([face_vertices, np.random.randint(0, 255, 3)])
             )
 
-        super().__init__(vertices, faces, position)
+        normals = mesh_data.normals
+        for i, face in enumerate(faces):
+            face.append(normals[i] / np.linalg.norm(normals[i]) * 255)
+
+        super().__init__(vertices, faces, position, color, True)

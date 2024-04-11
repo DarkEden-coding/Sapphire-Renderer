@@ -1,8 +1,8 @@
-from ..object_classes.vert_line_object import VertLineObject
+from ..object_classes.flat_faces_object import FlatFacesObject
 import numpy as np
 
 
-class Cube(VertLineObject):
+class Fcube(FlatFacesObject):
     def __init__(self, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0), size=1):
         vertices = np.array(
             [
@@ -27,21 +27,6 @@ class Cube(VertLineObject):
             ([3, 0, 4, 7], (255, 111, 200)),
         ]
 
-        lines = [
-            (0, 1),
-            (1, 2),
-            (2, 3),
-            (3, 0),
-            (4, 5),
-            (5, 6),
-            (6, 7),
-            (7, 4),
-            (0, 4),
-            (1, 5),
-            (2, 6),
-            (3, 7),
-        ]
-
-        super().__init__(vertices, lines, position, color)
+        super().__init__(vertices, faces, position, color)
 
         self.move_relative(np.array([-size / 2, -size / 2, -size / 2]))

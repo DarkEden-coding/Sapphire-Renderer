@@ -55,6 +55,8 @@ install_requires = [
     "numba",
     "pygame",
     "setuptools",
+    "pywavefront",
+    "numpy-stl",
 ]
 
 setup(

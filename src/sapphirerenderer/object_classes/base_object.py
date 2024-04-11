@@ -1,5 +1,6 @@
 import numpy as np
 from time import sleep
+from ..point_math.matricies import get_pitch_yaw_roll_matrix
 
 
 class Object:
@@ -18,6 +19,8 @@ class Object:
 
         self.drawing = False
         self.ambiguous = False
+
+        self.rotation_matrix = get_pitch_yaw_roll_matrix(*rotation)
 
     def _wait_for_draw(self):
         while self.drawing:
