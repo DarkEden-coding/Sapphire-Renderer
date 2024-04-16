@@ -44,20 +44,23 @@ class FlatFacesObject(Object):
         :param shadow: whether to render shadows
         :param shadow_effect: the strength of the shadow
         """
-        self.original_vertices = vertices.copy()
-        self.center_point = average_points(vertices)
-        self.position = position
-        self.shadow_effect = shadow_effect
-
-        super().__init__(color=color, position=self.position)
-        self.vertices = vertices
-        self.faces = faces
-        self.rotation = np.array([0, 0, 0], dtype=float)
-        self.shadow = shadow
-        self.negative_rotation_matrix = get_pitch_yaw_roll_matrix(*-self.rotation)
-
         self.drawing = False
         self.ambiguous = False
+
+        self.vertices = vertices
+        self.__util_move_to_zero()
+        self.original_vertices = vertices.copy()
+
+        self.faces = faces
+        self.position = position
+        self.shadow_effect = shadow_effect
+        self.shadow = shadow
+
+        self.rotation = np.array([0, 0, 0], dtype=float)
+        self.negative_rotation_matrix = get_pitch_yaw_roll_matrix(*-self.rotation)
+        self.center_point = average_points(vertices)
+
+        super().__init__(color=color, position=self.position)
 
         self.move_absolute(position)
 
@@ -76,6 +79,21 @@ class FlatFacesObject(Object):
         for i in range(len(self.vertices)):
             self.vertices[i] += vector
         self.center_point = average_points(self.vertices)
+        self.ambiguous = False
+
+    def __util_move_to_zero(self):
+        """
+        Move the object to an absolute position
+        :param vector: the position to move to
+        :return:
+        """
+        self._wait_for_draw()
+
+        self.ambiguous = True
+        self.center_point = average_points(self.vertices)
+        self.position = np.array([0, 0, 0], dtype=float)
+        for i in range(len(self.vertices)):
+            self.vertices[i] -= self.center_point
         self.ambiguous = False
 
     def move_absolute(self, vector):
@@ -171,8 +189,6 @@ class FlatFacesObject(Object):
         self.vertices *= scale_factor
         self.vertices += center_point
         self.ambiguous = False
-
-        self.center_point = average_points(self.vertices)
 
     def draw(self, surface, camera):
         """
