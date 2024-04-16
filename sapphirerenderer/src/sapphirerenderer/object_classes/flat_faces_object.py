@@ -234,6 +234,10 @@ class FlatFacesObject(Object):
 
                 shadow_normal /= self.shadow_effect
 
+                # if shadow_normal is nan, set it to 255
+                if np.isnan(shadow_normal):
+                    shadow_normal = 255
+
                 # dim the color based on the shadow_normal
                 face_color = tuple(
                     int(color * shadow_normal / 255) for color in face_color
