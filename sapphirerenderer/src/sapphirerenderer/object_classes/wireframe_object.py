@@ -12,7 +12,7 @@ from ..point_math.matricies import get_pitch_yaw_roll_matrix
 from ..point_math.average_points import average_points
 
 
-class VertLineObject(Object):
+class WireframeObject(Object):
     def __init__(
         self,
         vertices,

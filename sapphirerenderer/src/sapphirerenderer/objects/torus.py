@@ -1,5 +1,5 @@
 import numpy as np
-from ..object_classes.vert_line_object import VertLineObject
+from ..object_classes.wireframe_object import WireframeObject
 
 
 def generate_torus_points_and_segments(radius_major, radius_minor, resolution):
@@ -31,7 +31,7 @@ def generate_torus_points_and_segments(radius_major, radius_minor, resolution):
     return points, np.array(segments)
 
 
-class Torus(VertLineObject):
+class Torus(WireframeObject):
     def __init__(
         self,
         position=np.array([0.0, 0.0, 0.0]),

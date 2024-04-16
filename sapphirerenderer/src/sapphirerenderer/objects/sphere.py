@@ -1,5 +1,5 @@
 import numpy as np
-from ..object_classes.vert_line_object import VertLineObject
+from ..object_classes.wireframe_object import WireframeObject
 
 
 def generate_sphere_points_and_segments(radius, resolution):
@@ -31,7 +31,7 @@ def generate_sphere_points_and_segments(radius, resolution):
     return points, np.array(segments)
 
 
-class Sphere(VertLineObject):
+class Sphere(WireframeObject):
     def __init__(
         self,
         radius=1.0,

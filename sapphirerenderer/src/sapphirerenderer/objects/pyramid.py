@@ -1,5 +1,5 @@
 import numpy as np
-from ..object_classes.vert_line_object import VertLineObject
+from ..object_classes.wireframe_object import WireframeObject
 
 
 def generate_pyramid_points_and_segments(base_side_length, height):
@@ -31,7 +31,7 @@ def generate_pyramid_points_and_segments(base_side_length, height):
     return vertices, lines
 
 
-class Pyramid(VertLineObject):
+class Pyramid(WireframeObject):
     def __init__(
         self,
         position=np.array([0.0, 0.0, 0.0]),

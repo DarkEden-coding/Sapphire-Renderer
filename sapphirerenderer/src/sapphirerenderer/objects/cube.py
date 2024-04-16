@@ -1,8 +1,8 @@
-from ..object_classes.vert_line_object import VertLineObject
+from ..object_classes.wireframe_object import WireframeObject
 import numpy as np
 
 
-class Cube(VertLineObject):
+class Cube(WireframeObject):
     def __init__(self, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0), size=1):
         vertices = np.array(
             [

@@ -1,8 +1,8 @@
-from ..object_classes.vert_line_object import VertLineObject
+from ..object_classes.wireframe_object import WireframeObject
 import numpy as np
 
 
-class Line(VertLineObject):
+class Line(WireframeObject):
     def __init__(self, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0)):
         vertices = np.array(
             [

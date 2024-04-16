@@ -1,9 +1,9 @@
 import numpy as np
 from stl import mesh
-from ..object_classes.vert_line_object import VertLineObject
+from ..object_classes.wireframe_object import WireframeObject
 
 
-class Stl(VertLineObject):
+class Stl(WireframeObject):
     def __init__(self, filename, position=np.array([0.0, 0.0, 0.0]), color=(0, 0, 0)):
         # Load STL file
         mesh_data = mesh.Mesh.from_file(filename)
