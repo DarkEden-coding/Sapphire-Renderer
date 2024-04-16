@@ -10,8 +10,19 @@ pygame.init()
 
 
 @njit(fastmath=True)
-def get_face_distances(vertices, camera_position):
+def get_vertex_distances(vertices, camera_position):
     return [np.linalg.norm(vertex - camera_position) for vertex in vertices]
+
+
+def get_face_distances(faces, vertices, camera_position):
+    vertex_distances = get_vertex_distances(vertices, camera_position)
+    face_distances = []
+    for face in faces:
+        face_distance = 0
+        for vertex_index in face[0]:
+            face_distance += vertex_distances[vertex_index]
+        face_distances.append(face_distance / len(face[0]))
+    return face_distances
 
 
 class FlatFacesObject(Object):
@@ -22,10 +33,21 @@ class FlatFacesObject(Object):
         position=np.array([0, 0, 0]),
         color=(0, 0, 0),
         shadow=False,
+        shadow_effect=1,
     ):
+        """
+        Object with flat faces
+        :param vertices: the vertices of the object
+        :param faces: the faces of the object
+        :param position: the position of the object
+        :param color: the color of the object
+        :param shadow: whether to render shadows
+        :param shadow_effect: the strength of the shadow
+        """
         self.original_vertices = vertices.copy()
         self.center_point = average_points(vertices)
         self.position = position
+        self.shadow_effect = shadow_effect
 
         super().__init__(color=color, position=self.position)
         self.vertices = vertices
@@ -133,16 +155,22 @@ class FlatFacesObject(Object):
         self.ambiguous = False
 
     def draw(self, surface, camera):
+        """
+        Draw the object
+        :param surface: the pygame surface to draw on
+        :param camera: the camera to draw from
+        :return:
+        """
         self._wait_for_ambiguous()
         self.drawing = True
 
-        face_distances = get_face_distances(self.vertices, camera.position)
+        face_distances = get_face_distances(self.faces, self.vertices, camera.position)
 
-        self.faces = sorted(
-            self.faces,
-            key=lambda face: np.mean([face_distances[vertex] for vertex in face[0]]),
-            reverse=True,
-        )
+        sorted_indices = np.argsort(face_distances)[
+            ::-1
+        ]  # Sorting indices in descending order
+
+        self.faces = [self.faces[i] for i in sorted_indices]
 
         moved_vertices = self.vertices - camera.position
         reshaped_vertices = moved_vertices.reshape(-1, 1, moved_vertices.shape[1])
@@ -167,6 +195,8 @@ class FlatFacesObject(Object):
                 face_normal = np.dot(face_normal, self.negative_rotation_matrix)
 
                 shadow_normal = ((face_normal[2] + 255) / 510) * 255
+
+                shadow_normal /= self.shadow_effect
 
                 # dim the color based on the shadow_normal
                 face_color = tuple(

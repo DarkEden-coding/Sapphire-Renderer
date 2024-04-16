@@ -50,8 +50,8 @@ class SapphireRenderer:
                     exec(f"from .objects.{file[:-3]} import *")
                     obj_class_name = f"{file[:1].upper().replace('_', '')}{file[1:-3].replace('_', '')}"
                     self.loaded_objects.append((obj_class_name, eval(obj_class_name)))
-                except NameError:
-                    print(f"Error loading object from file {file}")
+                except Exception as e:
+                    print(f"Failed to load object {file}: {e}")
 
     def add_object(self, obj_name, args=None):
         """

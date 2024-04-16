@@ -3,13 +3,14 @@ from stl import mesh
 from ..object_classes.flat_faces_object import FlatFacesObject
 
 
-class Sstl(FlatFacesObject):
+class Fstl(FlatFacesObject):
     def __init__(
         self,
         filename,
         position=np.array([0.0, 0.0, 0.0]),
         color=(0, 0, 0),
         random_color=False,
+        shadow=True,
     ):
         # Load STL file
         mesh_data = mesh.Mesh.from_file(filename)
@@ -34,4 +35,4 @@ class Sstl(FlatFacesObject):
         for i, face in enumerate(faces):
             face.append(normals[i] / np.linalg.norm(normals[i]) * 255)
 
-        super().__init__(vertices, faces, position, color, True)
+        super().__init__(vertices, faces, position, color, shadow)

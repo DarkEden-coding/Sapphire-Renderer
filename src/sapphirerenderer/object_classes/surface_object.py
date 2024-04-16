@@ -9,6 +9,11 @@ pygame.init()
 
 class SurfaceObject(Object):
     def __init__(self, vertices, color=(0, 0, 0)):
+        """
+        Object with a single surface
+        :param vertices: the vertices of the surface
+        :param color: the color of the surface
+        """
         self.position = average_points(vertices)
         super().__init__(color=color, position=self.position)
         self.vertices = vertices
@@ -19,6 +24,11 @@ class SurfaceObject(Object):
         self.show()
 
     def change_vertices(self, vertices):
+        """
+        Change the vertices of the surface
+        :param vertices: the new vertices
+        :return:
+        """
         self._wait_for_draw()
 
         self.ambiguous = True
@@ -27,6 +37,12 @@ class SurfaceObject(Object):
         self.ambiguous = False
 
     def draw(self, surface, camera):
+        """
+        Draw the surface
+        :param surface: the pygame surface to draw on
+        :param camera: the camera to draw from
+        :return:
+        """
         self._wait_for_ambiguous()
 
         moved_vertices = self.vertices - camera.position
