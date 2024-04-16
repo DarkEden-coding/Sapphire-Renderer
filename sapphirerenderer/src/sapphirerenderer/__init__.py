@@ -1,3 +1,0 @@
-from sapphirerenderer.main import SapphireRenderer
-from sapphirerenderer.utility_objects.particle_manager import ParticleManager
-from sapphirerenderer.object_classes import *
