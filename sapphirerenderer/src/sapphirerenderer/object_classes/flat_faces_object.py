@@ -154,16 +154,22 @@ class FlatFacesObject(Object):
         self.vertices += point
         self.ambiguous = False
 
-    def scale(self, scale_factor):
+    def set_scale(self, scale_factor, center_point=None):
         """
         Scale the object
         :param scale_factor: the factor to scale by
+        :param center_point: the point to scale around
         :return:
         """
+        if center_point is None:
+            center_point = self.center_point
+
         self._wait_for_draw()
 
         self.ambiguous = True
-        self.vertices = self.original_vertices * scale_factor
+        self.vertices -= center_point
+        self.vertices *= scale_factor
+        self.vertices += center_point
         self.ambiguous = False
 
     def draw(self, surface, camera):
