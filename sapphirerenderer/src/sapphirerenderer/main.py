@@ -45,7 +45,7 @@ class SapphireRenderer:
     def load_objects(self):
         # go through all files in objects and load them
         for file in os.listdir(os.path.dirname(__file__) + "/objects"):
-            if file.endswith(".py"):
+            if file.endswith(".py") and file != "__init__.py":
                 try:
                     exec(f"from .objects.{file[:-3]} import *")
                     obj_class_name = f"{file[:1].upper().replace('_', '')}{file[1:-3].replace('_', '')}"
