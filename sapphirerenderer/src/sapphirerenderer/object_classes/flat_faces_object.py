@@ -47,20 +47,20 @@ class FlatFacesObject(Object):
         self.drawing = False
         self.ambiguous = False
 
+        self.position = position
+        super().__init__(color=color, position=self.position)
+
         self.vertices = vertices
         self.__util_move_to_zero()
         self.original_vertices = vertices.copy()
 
         self.faces = faces
-        self.position = position
         self.shadow_effect = shadow_effect
         self.shadow = shadow
 
         self.rotation = np.array([0, 0, 0], dtype=float)
         self.negative_rotation_matrix = get_pitch_yaw_roll_matrix(*-self.rotation)
         self.center_point = average_points(vertices)
-
-        super().__init__(color=color, position=self.position)
 
         self.move_absolute(position)
 
