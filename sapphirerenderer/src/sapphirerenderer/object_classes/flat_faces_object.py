@@ -172,6 +172,8 @@ class FlatFacesObject(Object):
         self.vertices += center_point
         self.ambiguous = False
 
+        self.center_point = average_points(self.vertices)
+
     def draw(self, surface, camera):
         """
         Draw the object
