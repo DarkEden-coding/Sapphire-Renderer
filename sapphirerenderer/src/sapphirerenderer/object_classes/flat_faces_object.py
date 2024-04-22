@@ -190,6 +190,10 @@ class FlatFacesObject(Object):
         self.vertices -= center_point
         self.vertices *= scale_factor
         self.vertices += center_point
+
+        self.original_vertices -= center_point
+        self.original_vertices *= scale_factor
+        self.original_vertices += center_point
         self.ambiguous = False
 
     def draw(self, surface, camera):
