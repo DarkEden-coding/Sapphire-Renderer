@@ -39,6 +39,9 @@ class SapphireRenderer:
         self.width = width
         self.height = height
 
+        self.camera_rotate_speed = camera_rotate_speed
+        self.camera_move_speed = camera_move_speed
+
         self.camera = Camera(self, position=np.array((0.0, -3.0, 0.0)))
 
         self.loaded_objects = []
@@ -107,26 +110,26 @@ class SapphireRenderer:
             scale_factor *= 2
 
         if keys[pygame.K_w]:
-            self.camera.move_relative((camera_move_speed * scale_factor, 0, 0))
+            self.camera.move_relative((self.camera_move_speed * scale_factor, 0, 0))
         if keys[pygame.K_s]:
-            self.camera.move_relative((-camera_move_speed * scale_factor, 0, 0))
+            self.camera.move_relative((-self.camera_move_speed * scale_factor, 0, 0))
         if keys[pygame.K_a]:
-            self.camera.move_relative((0, camera_move_speed * scale_factor, 0))
+            self.camera.move_relative((0, self.camera_move_speed * scale_factor, 0))
         if keys[pygame.K_d]:
-            self.camera.move_relative((0, -camera_move_speed * scale_factor, 0))
+            self.camera.move_relative((0, -self.camera_move_speed * scale_factor, 0))
         if keys[pygame.K_q]:
-            self.camera.move_relative((0, 0, -camera_move_speed * scale_factor))
+            self.camera.move_relative((0, 0, -self.camera_move_speed * scale_factor))
         if keys[pygame.K_e]:
-            self.camera.move_relative((0, 0, camera_move_speed * scale_factor))
+            self.camera.move_relative((0, 0, self.camera_move_speed * scale_factor))
 
         if keys[pygame.K_LEFT]:
-            self.camera.rotate_relative((0, -camera_rotate_speed * scale_factor))
+            self.camera.rotate_relative((0, -self.camera_rotate_speed * scale_factor))
         if keys[pygame.K_RIGHT]:
-            self.camera.rotate_relative((0, camera_rotate_speed * scale_factor))
+            self.camera.rotate_relative((0, self.camera_rotate_speed * scale_factor))
         if keys[pygame.K_UP]:
-            self.camera.rotate_relative((-camera_rotate_speed * scale_factor, 0))
+            self.camera.rotate_relative((-self.camera_rotate_speed * scale_factor, 0))
         if keys[pygame.K_DOWN]:
-            self.camera.rotate_relative((camera_rotate_speed * scale_factor, 0))
+            self.camera.rotate_relative((self.camera_rotate_speed * scale_factor, 0))
 
     def compiled_draw(self, surface, camera):
         """
