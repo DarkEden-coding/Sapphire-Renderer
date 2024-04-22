@@ -34,6 +34,7 @@ class FlatFacesObject(Object):
         color=(0, 0, 0),
         shadow=False,
         shadow_effect=1,
+        compile_verts=True,
     ):
         """
         Object with flat faces
@@ -43,12 +44,15 @@ class FlatFacesObject(Object):
         :param color: the color of the object
         :param shadow: whether to render shadows
         :param shadow_effect: the strength of the shadow
+        :param compile_verts: whether to compile the vertices in the rendering loop
         """
         self.drawing = False
         self.ambiguous = False
+        self.compile_verts = compile_verts
 
         self.position = position
         super().__init__(color=color, position=self.position)
+        self.show()
 
         self.vertices = vertices
         self.__util_move_to_zero()
@@ -64,15 +68,13 @@ class FlatFacesObject(Object):
 
         self.move_absolute(position)
 
-        self.show()
-
     def move_relative(self, vector):
         """
         Move the object by a relative amount
         :param vector: the amount to move by
         :return:
         """
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         self.position += vector
@@ -87,7 +89,7 @@ class FlatFacesObject(Object):
         :param vector: the position to move to
         :return:
         """
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         self.center_point = average_points(self.vertices)
@@ -102,7 +104,7 @@ class FlatFacesObject(Object):
         :param vector: the position to move to
         :return:
         """
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         vector = np.array(vector, dtype=float)
@@ -113,7 +115,7 @@ class FlatFacesObject(Object):
         self.ambiguous = False
 
     def __rotate(self, x_axis, y_axis, z_axis):
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         rotation_matrix = get_pitch_yaw_roll_matrix(x_axis, z_axis, y_axis)
@@ -138,7 +140,7 @@ class FlatFacesObject(Object):
             np.radians(z_axis),
         )
 
-        self._wait_for_draw()
+        self.wait_for_draw()
         self.ambiguous = True
         self.vertices -= self.center_point
         self.__rotate(x_axis, y_axis, z_axis)
@@ -164,7 +166,7 @@ class FlatFacesObject(Object):
             np.radians(z_axis),
         )
 
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         self.vertices -= point
@@ -182,7 +184,7 @@ class FlatFacesObject(Object):
         if center_point is None:
             center_point = self.center_point
 
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         self.vertices -= center_point
@@ -197,7 +199,7 @@ class FlatFacesObject(Object):
         :param camera: the camera to draw from
         :return:
         """
-        self._wait_for_ambiguous()
+        self.wait_for_ambiguous()
         self.drawing = True
 
         face_distances = get_face_distances(self.faces, self.vertices, camera.position)

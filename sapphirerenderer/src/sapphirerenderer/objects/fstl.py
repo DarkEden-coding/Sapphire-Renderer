@@ -35,4 +35,6 @@ class Fstl(FlatFacesObject):
         for i, face in enumerate(faces):
             face.append(normals[i] / np.linalg.norm(normals[i]) * 255)
 
+        faces = [tuple(face) for face in faces]
+
         super().__init__(vertices, faces, position, color, shadow)

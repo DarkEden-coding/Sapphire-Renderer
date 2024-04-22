@@ -29,11 +29,11 @@ class Object:
 
         self.rotation_matrix = get_pitch_yaw_roll_matrix(*rotation)
 
-    def _wait_for_draw(self):
+    def wait_for_draw(self):
         while self.drawing:
             sleep(0.0001)
 
-    def _wait_for_ambiguous(self):
+    def wait_for_ambiguous(self):
         while self.ambiguous:
             sleep(0.0001)
 

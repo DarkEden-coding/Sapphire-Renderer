@@ -10,6 +10,9 @@ from .settings import (
 )
 from time import time
 import threading
+from .point_math.project_point import project_point
+from .object_classes.flat_faces_object import get_face_distances
+import pygame
 
 average_fps_list = []
 
@@ -117,6 +120,109 @@ class SapphireRenderer:
         if keys[pygame.K_DOWN]:
             self.camera.rotate_relative((camera_rotate_speed * scale_factor, 0))
 
+    def compiled_draw(self, surface, camera):
+        """
+        Draw the compiled objects were all verts and faces are put together, sorted, and drawn
+        :param surface: the pygame surface to draw on
+        :param camera: the camera to draw from
+        :return:
+        """
+        compiled_faces = []
+        compiled_verts = []
+        index_offset = 0
+
+        # if number of objects is 0 with compiled verts enabled, return
+        if len([obj for obj in self.instance_objects if obj.compile_verts]) == 0:
+            return
+
+        for obj in self.instance_objects:
+            if not obj.is_hidden() and obj.compile_verts:
+                obj.drawing = True
+                obj.wait_for_ambiguous()
+
+                compiled_verts.extend(obj.vertices)
+
+                # append if the object has shadow, the strength of shadow, and the reverse rotation matrix to each face
+                for face in obj.faces:
+                    face = (
+                        [vertex + index_offset for vertex in face[0]],
+                        face[1],
+                        face[2],
+                    )
+
+                    compiled_faces.append(
+                        face
+                        + (
+                            obj.shadow,
+                            obj.shadow_effect,
+                            obj.negative_rotation_matrix,
+                        )
+                    )
+                obj.drawing = False
+                index_offset += len(obj.vertices)
+
+        if len(compiled_faces) == 0:
+            return
+
+        face_distances = get_face_distances(
+            compiled_faces, compiled_verts, camera.position
+        )
+
+        sorted_indices = np.argsort(face_distances)[
+            ::-1
+        ]  # Sorting indices in descending order
+
+        compiled_faces = [compiled_faces[i] for i in sorted_indices]
+
+        moved_vertices = compiled_verts - camera.position
+        reshaped_vertices = moved_vertices.reshape(-1, 1, moved_vertices.shape[1])
+        rotated_vertices = np.sum(camera.rotation_matrix * reshaped_vertices, axis=-1)
+
+        projected_vertices = [
+            project_point(
+                vertex,
+                camera.offset_array,
+                camera.focal_length,
+            )[0]
+            for vertex in rotated_vertices
+        ]
+
+        for face in compiled_faces:
+            face_verts = face[0]
+            face_color = face[1] if len(face) > 1 else (0, 0, 0)
+            face_normal = face[2] if len(face) > 2 else None
+            face_shadow = face[3] if len(face) > 3 else False
+            shadow_effect = face[4] if len(face) > 4 else 1
+            negative_rotation_matrix = face[5] if len(face) > 5 else None
+
+            # rotate face normal by object rotation
+            if face_normal is not None and face_shadow:
+                face_normal = np.dot(face_normal, negative_rotation_matrix)
+
+                shadow_normal = ((face_normal[2] + 255) / 510) * 255
+
+                shadow_normal /= shadow_effect
+
+                # if shadow_normal is nan, set it to 255
+                if np.isnan(shadow_normal):
+                    shadow_normal = 255
+
+                # dim the color based on the shadow_normal
+                face_color = tuple(
+                    int(color * shadow_normal / 255) for color in face_color
+                )
+
+            if any(
+                vertex is None
+                for vertex in [projected_vertices[vertex] for vertex in face_verts]
+            ):
+                continue
+            pygame.draw.polygon(
+                surface,
+                face_color,
+                [projected_vertices[vertex] for vertex in face_verts],
+            )
+
     def render_loop(self):
         import pygame
 
@@ -134,17 +240,17 @@ class SapphireRenderer:
             self.display.fill((255, 255, 255))
             self.update()
 
-            instance_objects = self.instance_objects.copy()
-
             # sort objects by distance from camera, reverse so that objects closer to camera are drawn last
-            instance_objects.sort(
+            self.instance_objects.sort(
                 key=lambda obj: np.linalg.norm(obj.position - self.camera.position),
                 reverse=True,
             )
 
-            for obj in instance_objects:
-                if not obj.is_hidden():
+            for obj in self.instance_objects:
+                if not obj.is_hidden() and not obj.compile_verts:
                     obj.draw(self.display, self.camera)
+
+            self.compiled_draw(self.display, self.camera)
 
             pygame.display.flip()
 
