@@ -17,16 +17,24 @@ import pygame
 average_fps_list = []
 
 
+def get_pygame_object():
+    return pygame
+
+
 class SapphireRenderer:
-    def __init__(self, width=1000, height=1000, draw_axis=False, object_files=None):
+    def __init__(
+        self, width=1000, height=1000, draw_axis=False, movement_handling=True
+    ):
         """
         Initialize the renderer
         :param width: Width of the window
         :param height: Height of the window
         :param draw_axis: Draws the axis lines, use-full for debugging
-        ;param: object_files: Used for loading different objects, a list of python file paths
+        ;param: movement_handling: Whether to handle movement of the camera
         """
         self.display = None
+
+        self.movement_handling = movement_handling
 
         self.width = width
         self.height = height
@@ -271,7 +279,8 @@ class SapphireRenderer:
                     f"Sapphire Renderer - FPS: {int(average_fps)}"
                 )
 
-            self.user_input(pygame, fps / real_fps)
+            if self.movement_handling:
+                self.user_input(pygame, fps / real_fps)
 
         pygame.quit()
 
