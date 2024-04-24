@@ -20,4 +20,8 @@ def project_point(point, offset_array, focal_length):
 
     scale_factor = 1 / np.linalg.norm(point)
 
+    # clamp projected point to 500 more than screen size
+    projected_point[0] = max(-5000, min(5000, projected_point[0]))
+    projected_point[1] = max(-5000, min(5000, projected_point[1]))
+
     return projected_point, scale_factor

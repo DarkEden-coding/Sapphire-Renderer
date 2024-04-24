@@ -9,13 +9,14 @@ from numba import njit
 pygame.init()
 
 
-@njit(fastmath=True)
+@njit("float64[:](float64[:, :], float64[:])", fastmath=True, parallel=False)
 def get_vertex_distances(vertices, camera_position):
-    return [np.linalg.norm(vertex - camera_position) for vertex in vertices]
+    moved_vertices = vertices - camera_position
+    return np.array([np.linalg.norm(vertex) for vertex in moved_vertices])
 
 
 def get_face_distances(faces, vertices, camera_position):
-    vertex_distances = get_vertex_distances(vertices, camera_position)
+    vertex_distances = get_vertex_distances(np.array(vertices), camera_position)
     face_distances = []
     for face in faces:
         face_distance = 0
