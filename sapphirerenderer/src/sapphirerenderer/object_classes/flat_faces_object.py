@@ -197,13 +197,15 @@ class FlatFacesObject(Object):
         self.original_vertices += center_point
         self.ambiguous = False
 
-    def draw(self, surface, camera, display_size):
+    def draw(self, renderer):
         """
         Draw the object
-        :param surface: the pygame surface to draw on
-        :param camera: the camera to draw from
-        :return:
+        :param renderer: the renderer to draw with
         """
+        camera = renderer.camera
+        surface = renderer.display
+        display_size = renderer.display_size
+
         self.wait_for_ambiguous()
         self.drawing = True
 
@@ -221,7 +223,12 @@ class FlatFacesObject(Object):
 
         projected_vertices = [
             project_point(
-                vertex, camera.offset_array, camera.focal_length, display_size
+                vertex,
+                camera.offset_array,
+                camera.focal_length,
+                display_size,
+                camera.fov_side,
+                camera.fov_top,
             )[0]
             for vertex in rotated_vertices
         ]

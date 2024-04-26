@@ -124,7 +124,16 @@ class WireframeObject(Object):
     def __str__(self):
         return self.__class__.__name__
 
-    def draw(self, surface, camera, display_size):
+    def draw(self, renderer):
+        """
+        Draw the object
+        :param renderer: the renderer to draw with
+        :return:
+        """
+        camera = renderer.camera
+        surface = renderer.display
+        display_size = renderer.display_size
+
         self.wait_for_ambiguous()
 
         moved_vertices = self.vertices - camera.position
@@ -137,6 +146,8 @@ class WireframeObject(Object):
                 camera.offset_array,
                 camera.focal_length,
                 display_size,
+                camera.fov_side,
+                camera.fov_top,
             )
             for vertex in rotated_vertices
         ]

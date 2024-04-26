@@ -18,6 +18,10 @@ class Camera:
         self.offset_array = np.array([self.size[0] / 2, self.size[1] / 2])
         self.focal_length = (self.size[0] / 2) / np.tan((self.fov / 2) * (np.pi / 180))
 
+        # compute the field of view
+        self.fov_side = np.arctan(self.size[0] / (2 * self.focal_length)) + 0.5
+        self.fov_top = np.arctan(self.size[1] / (2 * self.focal_length)) + 0.5
+
     def move_absolute(self, position):
         position = np.array([-position[1], position[0], position[2]])
         self.position = position

@@ -36,13 +36,16 @@ class TextObject(Object):
         """
         return self.text
 
-    def draw(self, surface, camera, display_size):
+    def draw(self, renderer):
         """
         Draw the text
-        :param surface: the pygame surface to draw on
-        :param camera: the camera to draw from
+        :param renderer: the renderer to draw with
         :return:
         """
+        camera = renderer.camera
+        surface = renderer.display
+        display_size = renderer.display_size
+
         # draw text with left corner at position, should also be scaled based on distance from camera
         camera_distance = np.linalg.norm(self.position - camera.position)
 
@@ -50,7 +53,12 @@ class TextObject(Object):
         rotated_vertices = np.sum(camera.rotation_matrix * moved_vertices, axis=-1)
 
         flat_position = project_point(
-            rotated_vertices, camera.offset_array, camera.focal_length, display_size
+            rotated_vertices,
+            camera.offset_array,
+            camera.focal_length,
+            display_size,
+            camera.fov_side,
+            camera.fov_top,
         )[0]
 
         if flat_position is not None:

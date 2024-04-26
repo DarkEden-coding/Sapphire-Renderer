@@ -193,7 +193,12 @@ class SapphireRenderer:
 
         projected_vertices = [
             project_point(
-                vertex, camera.offset_array, camera.focal_length, self.display_size
+                vertex,
+                camera.offset_array,
+                camera.focal_length,
+                self.display_size,
+                self.camera.fov_side,
+                self.camera.fov_top,
             )[0]
             for vertex in rotated_vertices
         ]
@@ -267,7 +272,7 @@ class SapphireRenderer:
 
             for obj in self.instance_objects:
                 if not obj.is_hidden() and not obj.compile_verts:
-                    obj.draw(self.display, self.camera, self.display_size)
+                    obj.draw(self)
 
             pygame.display.flip()
 
