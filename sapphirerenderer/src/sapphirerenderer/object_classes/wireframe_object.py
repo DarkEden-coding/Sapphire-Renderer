@@ -21,6 +21,7 @@ class WireframeObject(Object):
         color=(0, 0, 0),
     ):
         super().__init__(position=position, color=color)
+        self.compile_verts = False
         self.original_vertices = vertices.copy()
         self.vertices = vertices
         self.lines = lines
@@ -43,7 +44,7 @@ class WireframeObject(Object):
         :param vector: the amount to move by
         :return:
         """
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         self.position += vector
@@ -58,7 +59,7 @@ class WireframeObject(Object):
         :param vector: the position to move to
         :return:
         """
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         vector = np.array(vector, dtype=float)
@@ -69,7 +70,7 @@ class WireframeObject(Object):
         self.ambiguous = False
 
     def __rotate(self, x_axis, y_axis, z_axis):
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         rotation_matrix = get_pitch_yaw_roll_matrix(x_axis, z_axis, y_axis)
@@ -110,7 +111,7 @@ class WireframeObject(Object):
             np.radians(z_axis),
         )
 
-        self._wait_for_draw()
+        self.wait_for_draw()
 
         self.ambiguous = True
         self.vertices -= point
@@ -123,8 +124,8 @@ class WireframeObject(Object):
     def __str__(self):
         return self.__class__.__name__
 
-    def draw(self, surface, camera):
-        self._wait_for_ambiguous()
+    def draw(self, surface, camera, display_size):
+        self.wait_for_ambiguous()
 
         moved_vertices = self.vertices - camera.position
         reshaped_vertices = moved_vertices.reshape(-1, 1, moved_vertices.shape[1])
@@ -135,6 +136,7 @@ class WireframeObject(Object):
                 vertex,
                 camera.offset_array,
                 camera.focal_length,
+                display_size,
             )
             for vertex in rotated_vertices
         ]

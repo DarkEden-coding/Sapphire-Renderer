@@ -3,8 +3,8 @@ from numba import njit
 
 
 @njit(fastmath=True)
-def project_point(point, offset_array, focal_length):
-    if point[1] < 0:
+def project_point(point, offset_array, focal_length, screen_size):
+    if point[1] <= 0:
         return None, 1
 
     focal_length_divided_by_y = focal_length / point[1]
@@ -18,10 +18,13 @@ def project_point(point, offset_array, focal_length):
 
     projected_point += offset_array
 
-    scale_factor = 1 / np.linalg.norm(point)
+    # if the point is more than 2000 pixels off the edge of the screen, return None
+    if (
+        abs(projected_point[0]) > screen_size[0] + 2000
+        or abs(projected_point[1]) > screen_size[1] + 2000
+    ):
+        return None, 1
 
-    # clamp projected point to 500 more than screen size
-    projected_point[0] = max(-5000, min(5000, projected_point[0]))
-    projected_point[1] = max(-5000, min(5000, projected_point[1]))
+    point_size = 1 / np.linalg.norm(point)
 
-    return projected_point, scale_factor
+    return projected_point, point_size

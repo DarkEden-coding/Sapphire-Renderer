@@ -18,6 +18,7 @@ class TextObject(Object):
         super().__init__(position=position, color=color)
         self.text = text
         self.size = size
+        self.compile_verts = False
         self.show()
 
     def set_text(self, text):
@@ -35,7 +36,7 @@ class TextObject(Object):
         """
         return self.text
 
-    def draw(self, surface, camera):
+    def draw(self, surface, camera, display_size):
         """
         Draw the text
         :param surface: the pygame surface to draw on
@@ -49,9 +50,7 @@ class TextObject(Object):
         rotated_vertices = np.sum(camera.rotation_matrix * moved_vertices, axis=-1)
 
         flat_position = project_point(
-            rotated_vertices,
-            camera.offset_array,
-            camera.focal_length,
+            rotated_vertices, camera.offset_array, camera.focal_length, display_size
         )[0]
 
         if flat_position is not None:

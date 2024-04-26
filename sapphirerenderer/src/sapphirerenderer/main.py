@@ -17,10 +17,6 @@ import pygame
 average_fps_list = []
 
 
-def get_pygame_object():
-    return pygame
-
-
 class SapphireRenderer:
     def __init__(
         self, width=1000, height=1000, draw_axis=False, movement_handling=True
@@ -38,6 +34,7 @@ class SapphireRenderer:
 
         self.width = width
         self.height = height
+        self.display_size = (width, height)
 
         self.camera_rotate_speed = camera_rotate_speed
         self.camera_move_speed = camera_move_speed
@@ -55,6 +52,10 @@ class SapphireRenderer:
 
         self.thread = threading.Thread(target=self.render_loop)
         self.thread.start()
+
+    @staticmethod
+    def get_pygame_object():
+        return pygame
 
     def load_objects(self):
         # go through all files in objects and load them
@@ -131,7 +132,6 @@ class SapphireRenderer:
         if keys[pygame.K_DOWN]:
             self.camera.rotate_relative((self.camera_rotate_speed * scale_factor, 0))
 
-    @profile
     def compiled_draw(self, surface, camera):
         """
         Draw the compiled objects were all verts and faces are put together, sorted, and drawn
@@ -156,7 +156,7 @@ class SapphireRenderer:
             obj.drawing = True
             obj.wait_for_ambiguous()
 
-            compiled_verts.extend(obj.vertices)
+            compiled_verts.extend(obj.vertices.copy())
 
             # append if the object has shadow, the strength of shadow, and the reverse rotation matrix to each face
             for face in obj.faces:
@@ -193,15 +193,22 @@ class SapphireRenderer:
 
         projected_vertices = [
             project_point(
-                vertex,
-                camera.offset_array,
-                camera.focal_length,
+                vertex, camera.offset_array, camera.focal_length, self.display_size
             )[0]
             for vertex in rotated_vertices
         ]
 
         for face in compiled_faces:
             face_verts = face[0]
+
+            valid_verts = [
+                vertex
+                for vertex in [projected_vertices[vertex] for vertex in face_verts]
+                if vertex is not None
+            ]
+            if len(valid_verts) < 3:
+                continue
+
             face_color = face[1]
             face_normal = face[2]
             face_shadow = face[3]
@@ -220,18 +227,12 @@ class SapphireRenderer:
                 if np.isnan(shadow_normal):
                     shadow_normal = 255
 
-                # dim the color based on the shadow_normal
-                face_color = tuple(
-                    int(color * shadow_normal / 255) for color in face_color
-                )
+                red = int(face_color[0] * shadow_normal / 255)
+                green = int(face_color[1] * shadow_normal / 255)
+                blue = int(face_color[2] * shadow_normal / 255)
 
-            valid_verts = [
-                vertex
-                for vertex in [projected_vertices[vertex] for vertex in face_verts]
-                if vertex is not None
-            ]
-            if len(valid_verts) < 3:
-                continue
+                # dim the color based on the shadow_normal
+                face_color = (red, green, blue)
 
             pygame.draw.polygon(
                 surface,
@@ -262,11 +263,11 @@ class SapphireRenderer:
                 reverse=True,
             )
 
+            self.compiled_draw(self.display, self.camera)
+
             for obj in self.instance_objects:
                 if not obj.is_hidden() and not obj.compile_verts:
-                    obj.draw(self.display, self.camera)
-
-            self.compiled_draw(self.display, self.camera)
+                    obj.draw(self.display, self.camera, self.display_size)
 
             pygame.display.flip()
 
