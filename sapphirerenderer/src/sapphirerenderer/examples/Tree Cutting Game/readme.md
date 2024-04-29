@@ -1,0 +1,1 @@
+To play this game run main.py, to cut down trees hold x on them after they grow, if you have 100 money you can buy an upgrade to cut faster, to get the upgrade walk through the store box
