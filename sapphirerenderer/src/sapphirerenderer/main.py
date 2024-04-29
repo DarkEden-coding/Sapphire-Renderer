@@ -160,11 +160,18 @@ class SapphireRenderer:
 
             # append if the object has shadow, the strength of shadow, and the reverse rotation matrix to each face
             for face in obj.faces:
-                face = (
-                    [vertex + index_offset for vertex in face[0]],
-                    face[1],
-                    face[2],
-                )
+                if len(face) == 3:
+                    face = (
+                        [vertex + index_offset for vertex in face[0]],
+                        face[1],
+                        face[2],
+                    )
+                else:
+                    face = (
+                        [vertex + index_offset for vertex in face[0]],
+                        face[1],
+                        None,
+                    )
 
                 compiled_faces.append(
                     face
@@ -217,11 +224,20 @@ class SapphireRenderer:
             face_color = face[1]
             face_normal = face[2]
             face_shadow = face[3]
+
+            if not face_shadow:
+                pygame.draw.polygon(
+                    surface,
+                    face_color,
+                    valid_verts,
+                )
+                continue
+
             shadow_effect = face[4]
             negative_rotation_matrix = face[5]
 
             # rotate face normal by object rotation
-            if face_normal is not None and face_shadow:
+            if face_normal is not None:
                 face_normal = np.dot(face_normal, negative_rotation_matrix)
 
                 shadow_normal = ((face_normal[2] + 255) / 510) * 255

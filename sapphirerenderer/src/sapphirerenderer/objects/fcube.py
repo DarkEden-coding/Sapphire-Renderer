@@ -29,4 +29,4 @@ class Fcube(FlatFacesObject):
 
         super().__init__(vertices, faces, position, color)
 
-        self.move_relative(np.array([-size / 2, -size / 2, -size / 2]))
+        # self.move_relative(np.array([-size / 2, -size / 2, -size / 2]))

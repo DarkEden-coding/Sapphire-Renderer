@@ -86,8 +86,7 @@ class FlatFacesObject(Object):
 
     def __util_move_to_zero(self):
         """
-        Move the object to an absolute position
-        :param vector: the position to move to
+        Move the object to the origin
         :return:
         """
         self.wait_for_draw()
