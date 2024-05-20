@@ -36,6 +36,7 @@ class FlatFacesObject(Object):
         shadow=False,
         shadow_effect=1,
         compile_verts=True,
+        move_to_zero=True,
     ):
         """
         Object with flat faces
@@ -56,7 +57,8 @@ class FlatFacesObject(Object):
         self.show()
 
         self.vertices = vertices
-        self.__util_move_to_zero()
+        if move_to_zero:
+            self.__util_move_to_zero()
         self.original_vertices = vertices.copy()
 
         self.faces = faces

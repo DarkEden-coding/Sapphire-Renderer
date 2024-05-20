@@ -6,115 +6,26 @@ class Vector(FlatFacesObject):
     def __init__(
         self,
         start_point=np.array([0.0, 0.0, 0.0]),
-        rotation=np.array([0.0, 0.0, 0.0]),
-        length=1,
+        vector_components=np.array([1.0, 1.0, 1.0]),
         color=(0, 0, 0),
         thickness=0.02,
     ):
         """
         Vector object
         :param start_point: the start point of the vector
-        :param rotation: the rotation of the vector
-        :param length: the length of the vector
+        :param vector_components: the direction and length of the vector
         :param color: the color of the vector
         :param thickness: the thickness of the vector
         """
+        start_point = 0.5 * np.array(start_point)
 
-        vertices = []
-        faces = []
-        pi2 = np.pi * 2
+        self.start_point = start_point
+        self.vector_components = vector_components
+        self.end_point = start_point + vector_components
 
-        for i in range(max(round(length * 4), 1)):
-            vertices.append(
-                np.array(
-                    [np.cos(pi2 / 3) * thickness, np.sin(pi2 / 3) * thickness, i / 4]
-                )
-            )
-            vertices.append(
-                np.array(
-                    [
-                        np.cos(pi2 * 2 / 3) * thickness,
-                        np.sin(pi2 * 2 / 3) * thickness,
-                        i / 4,
-                    ]
-                )
-            )
-            vertices.append(
-                np.array([np.cos(pi2) * thickness, np.sin(pi2) * thickness, i / 4])
-            )
-
-        vertices.append(
-            np.array(
-                [
-                    np.cos(pi2 / 3) * thickness,
-                    np.sin(pi2 / 3) * thickness,
-                    length - 0.03,
-                ]
-            )
-        )
-        vertices.append(
-            np.array(
-                [
-                    np.cos(pi2 * 2 / 3) * thickness,
-                    np.sin(pi2 * 2 / 3) * thickness,
-                    length - 0.03,
-                ]
-            )
-        )
-        vertices.append(
-            np.array([np.cos(pi2) * thickness, np.sin(pi2) * thickness, length - 0.03])
-        )
-
-        # make faces between the vertices so that outside of the vector is filled in
-        # ex: (0, 1, 3, 4) makes a face between the two ends of the vector
-        for i in range(0, len(vertices) - 3, 3):
-            for j in range(3):
-                if j == 2:
-                    faces.append(
-                        (
-                            [i + 2, i, i + 3, i + 5],
-                            color,
-                        )
-                    )
-                else:
-                    faces.append(
-                        (
-                            [i + j, i + j + 1, i + j + 4, i + j + 3],
-                            color,
-                        )
-                    )
-
-        # make arrow head
-        for i in range(4):
-            vertices.append(
-                np.array(
-                    [
-                        np.cos(pi2 * (i + 1) / 4) * thickness * 2,
-                        np.sin(pi2 * (i + 1) / 4) * thickness * 2,
-                        length - 0.03,
-                    ],
-                )
-            )
-        vertices.append(np.array([0, 0, length], dtype=float))
-
-        faces.append(([len(vertices) - 5, len(vertices) - 4, len(vertices) - 1], color))
-        faces.append(
-            (
-                [len(vertices) - 4, len(vertices) - 3, len(vertices) - 1],
-                color,
-            )
-        )
-        faces.append(
-            (
-                [len(vertices) - 3, len(vertices) - 2, len(vertices) - 1],
-                color,
-            )
-        )
-        faces.append(
-            (
-                [len(vertices) - 2, len(vertices) - 5, len(vertices) - 1],
-                color,
-            )
+        direction = vector_components / np.linalg.norm(vector_components)
+        vertices, faces = self.create_faces(
+            self.start_point, self.end_point, direction, thickness, color
         )
 
         super().__init__(
@@ -123,4 +34,41 @@ class Vector(FlatFacesObject):
             color=color,
             compile_verts=True,
             position=start_point,
+            move_to_zero=False,
         )
+
+    def create_faces(self, start, end, direction, thickness, color):
+        # Define the vertices and faces
+        perpendicular_vector = np.cross(direction, np.array([1, 0, 0]))
+        if (
+            np.linalg.norm(perpendicular_vector) < 1e-6
+        ):  # direction was collinear with x-axis
+            perpendicular_vector = np.cross(direction, np.array([0, 1, 0]))
+
+        perpendicular_vector = (
+            perpendicular_vector / np.linalg.norm(perpendicular_vector) * thickness
+        )
+        perpendicular_vector2 = np.cross(direction, perpendicular_vector)
+        perpendicular_vector2 = (
+            perpendicular_vector2 / np.linalg.norm(perpendicular_vector2) * thickness
+        )
+
+        vertices = np.array(
+            [
+                start + perpendicular_vector,
+                start - perpendicular_vector,
+                start + perpendicular_vector2,
+                start - perpendicular_vector2,
+                end + perpendicular_vector,
+                end - perpendicular_vector,
+                end + perpendicular_vector2,
+                end - perpendicular_vector2,
+            ]
+        )
+
+        faces = [
+            ([0, 1, 5, 4], color),  # Face 1
+            ([2, 3, 7, 6], color),  # Face 2
+        ]
+
+        return vertices.tolist(), faces
