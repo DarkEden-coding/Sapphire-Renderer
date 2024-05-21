@@ -2,6 +2,15 @@ from ..object_classes.flat_faces_object import FlatFacesObject
 import numpy as np
 
 
+def average_points(points):
+    """
+    Get the average of a list of points
+    :param points: list of points
+    :return: average point
+    """
+    return np.mean(points, axis=0)
+
+
 class Vector(FlatFacesObject):
     def __init__(
         self,
@@ -39,29 +48,13 @@ class Vector(FlatFacesObject):
             move_to_zero=False,
         )
 
-    def update_vector(self, start_point=None, vector_components=None):
-        """
-        Update the vector
-        :param start_point: the start point of the vector
-        :param vector_components: the direction and length of the vector
-        """
-        if start_point is not None:
-            start_point = 0.5 * np.array(start_point)
-            self.start_point = start_point
+    def get_start_point(self):
+        # calculate the start point of the vector based on vertices
+        return average_points(self.vertices[:4])
 
-        if vector_components is not None:
-            self.vector_components = vector_components
-
-        self.end_point = self.start_point + self.vector_components
-
-        direction = vector_components / np.linalg.norm(vector_components)
-        vertices, faces = self.create_faces(
-            self.start_point, self.end_point, direction, self.thickness, self.color
-        )
-
-        self.faces = faces
-        self.vertices = vertices
-
+    def get_end_point(self):
+        # calculate the end point of the vector based on vertices
+        return average_points(self.vertices[4:8])
 
     def create_faces(self, start, end, direction, thickness, color):
         # Define the vertices and faces
