@@ -22,6 +22,8 @@ class Vector(FlatFacesObject):
         self.start_point = start_point
         self.vector_components = vector_components
         self.end_point = start_point + vector_components
+        self.thickness = thickness
+        self.color = color
 
         direction = vector_components / np.linalg.norm(vector_components)
         vertices, faces = self.create_faces(
@@ -36,6 +38,30 @@ class Vector(FlatFacesObject):
             position=start_point,
             move_to_zero=False,
         )
+
+    def update_vector(self, start_point=None, vector_components=None):
+        """
+        Update the vector
+        :param start_point: the start point of the vector
+        :param vector_components: the direction and length of the vector
+        """
+        if start_point is not None:
+            start_point = 0.5 * np.array(start_point)
+            self.start_point = start_point
+
+        if vector_components is not None:
+            self.vector_components = vector_components
+
+        self.end_point = self.start_point + self.vector_components
+
+        direction = vector_components / np.linalg.norm(vector_components)
+        vertices, faces = self.create_faces(
+            self.start_point, self.end_point, direction, self.thickness, self.color
+        )
+
+        self.faces = faces
+        self.vertices = vertices
+
 
     def create_faces(self, start, end, direction, thickness, color):
         # Define the vertices and faces
