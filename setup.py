@@ -61,7 +61,7 @@ install_requires = [
 
 setup(
     name="sapphire-renderer",
-    version="0.0.52",
+    version="0.0.53",
     author="Dark_Eden",
     author_email="darkedenc9@gmail.com",
     description="A package to easily render simple 3D scenes",
