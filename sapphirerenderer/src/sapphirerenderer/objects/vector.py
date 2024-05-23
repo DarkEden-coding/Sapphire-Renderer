@@ -91,3 +91,20 @@ class Vector(FlatFacesObject):
         ]
 
         return vertices.tolist(), faces
+
+    def update_using_components(self, start_point, vector_components):
+        """
+        Update the vector using a new start point and vector components
+        :param start_point: the new start point
+        :param vector_components: the new vector components
+        """
+        self.start_point = start_point
+        self.vector_components = vector_components
+        self.end_point = start_point + vector_components
+
+        direction = vector_components / np.linalg.norm(vector_components)
+        vertices, _ = self.create_faces(
+            self.start_point, self.end_point, direction, self.thickness, self.color
+        )
+
+        self.vertices = vertices
