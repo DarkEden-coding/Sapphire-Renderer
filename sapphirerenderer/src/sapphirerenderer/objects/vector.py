@@ -35,9 +35,10 @@ class Vector(FlatFacesObject):
         self.color = color
 
         direction = vector_components / np.linalg.norm(vector_components)
-        vertices, faces = self.create_faces(
-            self.start_point, self.end_point, direction, thickness, color
-        )
+        vertices, faces = self.create_faces(direction)
+
+        self.vertices = vertices
+        self.faces = faces
 
         super().__init__(
             vertices=vertices,
@@ -56,7 +57,7 @@ class Vector(FlatFacesObject):
         # calculate the end point of the vector based on vertices
         return average_points(self.vertices[4:8])
 
-    def create_faces(self, start, end, direction, thickness, color):
+    def create_faces(self, direction):
         # Define the vertices and faces
         perpendicular_vector = np.cross(direction, np.array([1, 0, 0]))
         if (
@@ -65,29 +66,31 @@ class Vector(FlatFacesObject):
             perpendicular_vector = np.cross(direction, np.array([0, 1, 0]))
 
         perpendicular_vector = (
-            perpendicular_vector / np.linalg.norm(perpendicular_vector) * thickness
+            perpendicular_vector / np.linalg.norm(perpendicular_vector) * self.thickness
         )
         perpendicular_vector2 = np.cross(direction, perpendicular_vector)
         perpendicular_vector2 = (
-            perpendicular_vector2 / np.linalg.norm(perpendicular_vector2) * thickness
+            perpendicular_vector2
+            / np.linalg.norm(perpendicular_vector2)
+            * self.thickness
         )
 
         vertices = np.array(
             [
-                start + perpendicular_vector,
-                start - perpendicular_vector,
-                start + perpendicular_vector2,
-                start - perpendicular_vector2,
-                end + perpendicular_vector,
-                end - perpendicular_vector,
-                end + perpendicular_vector2,
-                end - perpendicular_vector2,
+                self.start + perpendicular_vector,
+                self.start - perpendicular_vector,
+                self.start + perpendicular_vector2,
+                self.start - perpendicular_vector2,
+                self.end + perpendicular_vector,
+                self.end - perpendicular_vector,
+                self.end + perpendicular_vector2,
+                self.end - perpendicular_vector2,
             ]
         )
 
         faces = [
-            ([0, 1, 5, 4], color),  # Face 1
-            ([2, 3, 7, 6], color),  # Face 2
+            ([0, 1, 5, 4], self.color),  # Face 1
+            ([2, 3, 7, 6], self.color),  # Face 2
         ]
 
         return vertices.tolist(), faces
@@ -103,8 +106,6 @@ class Vector(FlatFacesObject):
         self.end_point = start_point + vector_components
 
         direction = vector_components / np.linalg.norm(vector_components)
-        vertices, _ = self.create_faces(
-            self.start_point, self.end_point, direction, self.thickness, self.color
-        )
+        vertices, _ = self.create_faces(direction)
 
         self.vertices = vertices
